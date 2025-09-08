@@ -1,0 +1,2277 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nepali Phonetic Keyboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Use Google Fonts for 'Noto Sans Devanagari' -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 1rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            padding: 2rem; /* p-8 */
+            width: 100%;
+            max-width: 650px; /* Increased max-width for font selector */
+        }
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 0.75rem; /* p-3 */
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s ease-in-out;
+            font-family: 'Noto Sans Devanagari', sans-serif; /* Default to Noto */
+        }
+        textarea:focus {
+            border-color: #3b82f6; /* focus:border-blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* focus:ring-blue-200 */
+        }
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem; /* gap-2 */
+            margin-top: 1rem; /* mt-4 */
+            min-height: 40px; /* To prevent layout shifts */
+        }
+        .suggestion-btn {
+            background-color: #eff6ff; /* bg-blue-50 */
+            color: #1d4ed8; /* text-blue-800 */
+            padding: 0.5rem 0.75rem; /* px-3 py-2 */
+            border-radius: 0.375rem; /* rounded-md */
+            font-size: 1rem; /* text-base */
+            font-weight: 500; /* font-medium */
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px; /* Ensure buttons have a minimum size */
+        }
+        .suggestion-btn:hover {
+            background-color: #dbeafe; /* hover:bg-blue-100 */
+            transform: translateY(-1px);
+        }
+        .suggestion-btn:active {
+            transform: translateY(0);
+        }
+        .suggestion-btn.highlighted {
+            background-color: #a7d3fd; /* A more distinct highlight color */
+            border: 2px solid #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        .label {
+            font-weight: 600; /* font-semibold */
+            margin-bottom: 0.5rem; /* mb-2 */
+            color: #1f2937; /* text-gray-900 */
+        }
+        .output-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            justify-content: flex-end;
+        }
+        .action-button {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .action-button:hover {
+            background-color: #4338ca; /* indigo-700 */
+            transform: translateY(-1px);
+        }
+        .action-button:active {
+            transform: translateY(0);
+        }
+        .action-button.highlighted {
+            background-color: #a7d3fd; /* A more distinct highlight color */
+            border: 2px solid #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        .user-id-display {
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: #4b5563; /* gray-600 */
+            text-align: center;
+            word-break: break-all;
+        }
+
+        .textarea-box {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 1.5rem;
+            line-height: 2.25rem;
+        }
+
+        .keyboard-row button {
+            transition: transform 0.1s ease-in-out, background-color 0.1s ease-in-out;
+        }
+
+        .keyboard-row button:active {
+            transform: scale(0.95);
+        }
+        
+        /* Tips and Tricks Section */
+        .tips-container {
+            margin-top: 2rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tips-header {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        
+        .tips-content {
+            background-color: #f1f5f9;
+            padding: 1rem;
+        }
+        
+        .tip-item {
+            margin-bottom: 0.75rem;
+            display: flex;
+        }
+        
+        .tip-bullet {
+            color: #3b82f6;
+            font-weight: bold;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .examples-container {
+            margin-top: 1.5rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .examples-header {
+            background-color: #10b981;
+            color: white;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        
+        .examples-content {
+            background-color: #ecfdf5;
+            padding: 1rem;
+        }
+        
+        .example-item {
+            margin-bottom: 0.5rem;
+            display: flex;
+        }
+        
+        .example-input {
+            font-weight: 500;
+            margin-right: 0.5rem;
+            color: #059669;
+        }
+        
+        .example-output {
+            color: #065f46;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Nepali Phonetic Transliteration Keyboard</h1>
+        <p class="text-center text-gray-600 mb-4">Click the keys or type using the phonetic layout below.</p>
+
+        <!-- Phonetic Input Box -->
+        <div class="mb-4">
+            <label for="phonetic-input-textarea" class="label block">Phonetic Input</label>
+            <textarea id="phonetic-input-textarea"
+                class="w-full h-24 p-4 rounded-2xl border-2 border-gray-300 focus:outline-none focus:border-blue-500 resize-none shadow-inner textarea-box"
+                placeholder="Start typing in English... " spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+            <div class="flex gap-2 mt-2">
+                <button id="insertZWNJ" class="action-button">ZWNJ</button>
+                <button id="insertZWJ" class="action-button">ZWJ</button>
+            </div>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="mb-4">
+            <label class="label block">Suggestions:</label>
+            <div id="suggestionBox" class="suggestions">
+                <!-- Suggestions will appear here -->
+            </div>
+        </div>
+
+        <!-- Devanagari Output Box -->
+        <div class="mb-6">
+            <label for="devanagari-output-textarea" class="label block">Devanagari Output</label>
+            <textarea id="devanagari-output-textarea"
+                class="w-full h-24 p-4 rounded-2xl border-2 border-gray-300 bg-gray-100 resize-none shadow-inner textarea-box"
+                readonly></textarea>
+            <div class="output-actions">
+                <button id="selectAllBtn" class="action-button">Select All</button>
+                <button id="copyBtn" class="action-button">Copy</button>
+            </div>
+        </div>
+        
+        <!-- Tips and Tricks Section -->
+        <div class="tips-container">
+            <div class="tips-header">Tips and Tricks</div>
+            <div class="tips-content">
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>General phonetic: k=क्, ka=क, kaa=का, ki=कि, kii=की, ku=कु, kuu=कू, ke=के, kai=कै, ko=को, kau=कौ , yna = ञ</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>To mix English into your Nepali text. Simply put any text you want to keep in English inside the curly {} brackets. Example: yo {mobile} mero ho. = यो mobile मेरो हो।</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>If a letter gets wrongly evaluated with the next letter, use the slash (/) key to separate. Example: .pratishatko = प्रतिशत्को, pratishat/ko = प्रतिशतको | शब्दको अन्त्यमा हलन्त नराख्नको लागि backslash (\) अक्षर प्रयोग गर्नुहोस् । Example: bas = बस्, bas\ = बस।</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span class="tip-text">When typing \, /, *, **, these won't be seen in the input and output as they are special formatting characters</span>
+                </div>             
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>Other special characters: .=।, ..=॥, *=ं, **=ँ,</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>Press shift key to toggle 'ZWNJ' and 'ZWJ' and 'enter' to select</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>Press space key to exit from highlighted ZWNJ or ZWJ</span>
+                </div>              
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>Note: 'ZWNJ' and 'ZWJ' are used to type like न् + zwj= न्‍</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>Press 'Tab' to disable suggestions and press again to enable</span>
+                </div>
+                <div class="tip-item">
+                    <span class="tip-bullet">•</span>
+                    <span>Use arrows like ←,→,↑,↓ to cycle/move across suggestions</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Examples Section -->
+        <div class="examples-container">
+            <div class="examples-header">Some Examples</div>
+            <div class="examples-content">
+                <div class="example-item">
+                    <span class="example-input">namaskar</span>
+                    <span class="example-output">= नमस्कार</span>
+                </div>
+                <div class="example-item">
+                    <span class="example-input">dhanyawaad</span>
+                    <span class="example-output">= धन्यवाद</span>
+                </div>
+                <div class="example-item">
+                    <span class="example-input">sagarmatha</span>
+                    <span class="example-output">= सगरमाथा</span>
+                </div>
+                <div class="example-item">
+                    <span class="example-input">sa*bidhan</span>
+                    <span class="example-output">= संविधान</span>
+                </div>
+                <div class="example-item">
+                    <span class="example-input">swatantrataa</span>
+                    <span class="example-output">= स्वतन्त्रता</span>
+                </div>
+                <div class="example-item">
+                    <span class="example-input">Kathmandu</span>
+                    <span class="example-output">= काठमणडौँ</span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="userIdDisplay" class="user-id-display"></div>
+    </div>
+
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const textarea = document.getElementById('phonetic-input-textarea');
+        const suggestionBox = document.getElementById('suggestionBox');
+        const outputArea = document.getElementById('devanagari-output-textarea');
+        const selectAllButton = document.getElementById('selectAllBtn');
+        const copyButton = document.getElementById('copyBtn');
+        const userIdDisplay = document.getElementById('userIdDisplay');
+        const insertZWNJBtn = document.getElementById('insertZWNJ');
+        const insertZWJBtn = document.getElementById('insertZWJ');
+
+        // Firebase variables
+        let app;
+        let db;
+        let auth;
+        let userId; // Will be set after authentication
+
+        // Global variable to control suggestion visibility
+        let suggestionsEnabled = true; // Suggestions are enabled by default
+
+        // Firebase Initialization and Authentication
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            // Listen for auth state changes to set the userId
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    userIdDisplay.textContent = `Your User ID: ${userId}`;
+                } else {
+                    // Sign in anonymously if not authenticated
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (error) {
+                        console.error("Error signing in anonymously:", error);
+                        userIdDisplay.textContent = "Error authenticating. History may not save.";
+                    }
+                }
+                // Once authenticated (or anonymously signed in), run initial updates
+                updateOutput();
+                generateAndDisplaySuggestions();
+            });
+
+            // Try to sign in with custom token if available (for Canvas environment)
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                signInWithCustomToken(auth, __initial_auth_token)
+                    .then(() => {
+                        console.log("Signed in with custom token.");
+                    })
+                    .catch((error) => {
+                        console.error("Error signing in with custom token:", error);
+                        // Fallback to anonymous if custom token fails
+                        signInAnonymously(auth).catch(anonError => console.error("Anonymous sign-in failed:", anonError));
+                    });
+            } else {
+                // If no custom token, try anonymous sign-in directly
+                signInAnonymously(auth).catch(anonError => console.error("Anonymous sign-in failed:", anonError));
+            }
+
+        } catch (e) {
+            console.error("Firebase initialization failed:", e);
+            userIdDisplay.textContent = "Firebase not initialized. History feature unavailable.";
+        }
+
+
+        // Document content for parsing phonetic rules
+        const documentContent = `Nepali Barhakhari (बाराखडी)
+स्वर (Vowels)
+a=अ/आ , aa=आ , i=इ/ई , ii=ई , u=उ/ऊ , uu=ऊ , e=ए , ai=ऐ , o=ओ , au=औ ,', ?= ?, !=!
+व्यंजन (Consonants with Vowels)
+क (ka)
+k/c=क्/क , ka/ca=क/का , kaa=का , ki=कि/की , kii=की , ku=कु/कू , kuu=कू , ke=के , kai=कै , ko=को , kau=कौ 
+ख (kha)
+kh=ख्/ख , kha=ख/खा , khaa=खा , khi=खि/खी , khii=खी , khu=खु/खू , khuu=खू , khe=खे , khai=खै , kho=खौ , khau=खौ 
+ग (ga)
+g=ग्/ग , ga=ग/गा , gaa=गा , gi=गि/गी , gii=गी , gu=गु/गू , guu=गू , ge=गे , gai=गै , go=गो , gau=गौ
+घ (gha)
+gh=घ्/घ , gha=घ/घा , ghaa=घा , ghi=घि/घी , ghii=झी , ghu=घु/घू , ghuu=घू , ghe=घे , ghai=घै , gho=घो , ghau=घौ 
+ङ (nga)
+ng=ङ्/ङ , nga=ङ/ङा , ngaa=ङा , ngi=ङि/ङी , ngii=ङी , ngu=ङु/ङू , nguu=ङू , nge=ङे , ngai=ङै , ngo=ङो , ngau=ङौ   
+च (cha)
+ch=च्/च , cha=च/चा , chaa=चा , chi=चि/ची , chii=ची , chu=चु/चू , chuu=चू , che=चे , chai=चै , cho=चो , chau=चौ
+छ (chha)
+chh/x=छ्/छ , chha/xa=छ/छा, chhaa/xaa=छा , chhi/xi= छि/छी , chhii/xii=छी , chhu/xu=छु/छू , chhuu/xuu=छू , chhe/xe=छे , chhai/xai=छै , chho/xo=छो , chhau/xau=छौ
+ज (ja)
+j/z=ज्/ज , ja/za=ज/जा , jaa/zaa=जा , ji/zi=जि/जी , jii/zii=जी , jii/zii=जी , ju=जु/जू , juu/zuu=जू , je/ze=जे , jai/zai=जै , jo/zo=जो , jau/zau=जौ
+झ (jha)
+jh=झ्/झ , jha=झ/झा , jhaa=झा , jhi=झि/झी , jhii=झी , jhu=झु/झू , jhuu=झू , jhe=झे , jhai=झै , jho=झो , jhau=झौ
+ञ (yna)
+yn=ञ् , yna=ञ , ynaa=ञा , yni=ञि , ynii=ञी , ynu=ञु , ynuu=ञू , yne=ञे , ynai=ञै , yno=ञो , ynau=ञौ 
+ण (Na)
+N=ण्/ ण/ न, Na=ण/ णा/ न / ना , Naa=णा/ना , Ni=णि/ णी/ नि/नी , Nii=णी/नी , Nu=णु/ णू/ नु/नू , Nuu=णू/नू , Ne=णे/ने , Nai=णै/नै , No=णो/ नो , Nau=णौ/नौ
+त (ta)
+t= ट्/त्/ट/त , ta= ट/त/टा/ता , taa= टा/ता , ti= टि/ति/टी/ती, tii=ती , tu= टू/तु/टू/तू , tuu= टू/तू , te= टे/ते , tai= टै/तै , to= टो/तो , tau= टौ/तौ 
+थ (tha)
+th= ठ्/थ्/ठ/थ , tha= ठ/थ/ठा/था , thaa=ठा/था , thi= ठि/थि/ठी/थी , thii=थी , thu= ठु/थु/ठू, thuu= ठू/थू , the= ठे/थें , thai= ठै/थै , tho= ठो/थौ , thau= ठौ/थौ 
+द (da)
+d= ड्/द्/ड/द , da= ड/द/डा/दा , daa=डा/दा , di= डि/दि/डी/दी , dii= डी/दी , du= डु/दु/डू/दू/डौ , duu= डू/दू , de= डे/दे , dai= डै/दै , do= डो/दो , dau= डौ/दौ
+ध (dha)
+dh= ढ्/ध् , dha= ढ/ध/ढा/धा , dhaa= ढा/धा , dhi= ढि/धि/ढी/धी , dhii= ढी/धी , dhu= ढु/धु/ढू/धू , dhuu= ढू/धू , dhe= ढे/धे , dhai= ढै/धै , dho=ढो/धो , dhau=ढौ/धौ 
+न (na)
+n=न्/ण्/ञ्/न/ञ/ण/ ं , na=न/ञ/ण/ना/णा , naa=ना/णा , ni=नि/नी/णि/णी , nii=नी/णी , nu=नु/नू , nuu=नू , ne=ने/णे , nai=नै/णै , no=नो/णो , nau=नौ/णौ
+प (pa)
+p=प्/ प  , pa=प/ पा  , paa=पा , pi=पि/ पी  , pii=पी , pu=पु/ पू  , puu=पू , pe=पे , pai=पै , po=पो , pau=पौ
+फ (pha)
+ph/f=फ्/फ  , pha/fa=फ/ फा  , phaa/faa=फा , phi/fi=फि/ फी  , phii/fii=फी , phu/fu/phoo=फु/ फू  , phuu/fuu=फू , phe/fe=फे , phai/fai=फै , pho/fo=फो , phau/fau=फौ
+ब (ba)
+b=ब्/ब/व्/व, ba=ब/बा/व/वा , baa=बा/वा , bi=बि/ बी/वि/वी , bii=बी/वी , bu=बु/बू/वु/वू , buu=बू/वू , be=बे/वे , bai=बै/वै , bo=बो/वो, bau=बौ/वौ 
+भ (bha)
+bh=भ्/ भ  , bha=भ/ भा  , bhaa=भा , bhi=भि/ भी  , bhii=भी , bhu=भु/ भू  , bhuu=भू , bhe=भे , bhai=भै , bho=भो , bhau=भौ 
+म (ma)
+m=म्/ म/ ं  , ma=म/ मा  , maa=मा , mi=मि/ मी  , mii=मी , mu=मु/ मू  , muu=मू , me=मे , mai=मै , mo=मो , mau=मौ
+य (ya)
+y=य्/ य  , ya=य/ या  , yaa=या , yi=यि/ यी  , yii=यी , yu=यु/ यू  , yuu=यू , ye=ये , yai=यै , yo=यो , yau=यौ 
+र (ra)
+r=र्/र/र्‍, ra=र/रा , raa=रा , ri=रि/री/  ृ  / ॠ  , rii=री , ru=रु/रू , ruu=रू , re=रे , rai=रै , ro=रो , rau=रौ 
+ल (la)
+l=ल्/ल, la=ल/ला , laa=ला , li=लि/ली , lii=ली , lu=लु/लू , luu=लू , le=ले , lai=लै , lo=लो , lau=लौ
+व (wa)
+w/v/=व्/व, wa/va=व/वा, waa/vaa=वा, wi/vi=वि/वी, wii/vii=वी, wu/vu=वु/वू, wuu/vuu=वू, we/ve=वे, wai/vai=वै, wo/vo=वो , wau/vau=वौ 
+ष (sha)
+sh= श्/ष्/श/ष, sha= श/ष/शा/षा , shaa=षा , shi= शि/षि/शी/षी , shii=षी , shu= शु/षु/ , shuu=षू/षू , she= शे/षे , shai= शै/षै , sho= शो/षो , shau= शौ/षौ
+स (sa)
+s=स्/स , sa=स/सा , saa=सा , si=सि/सी , sii=सी , su=सु/सू , suu=सू , se=से , sai=सै , so=सो , sau=सौ 
+ह (ha)
+h=ह्/ह , ha=ह/हा , haa=हा , hi=हि/ही , haa=ही , hu=हु/हू , huu=हू , he=हे , hai=है , ho=हो , hau=हौ 
+क्ष (ksha)
+ksh=क्ष्/क्ष , ksha=क्ष/क्षा , kshaa=क्षा , kshi=क्षि/क्षी , kshuu=क्षू , kshe=क्षे , kshai=क्षै , ksho=क्षो , kshau=क्षौ 
+त्र (tra)
+tr=त्र्/त्र , tra=त्र/त्रा , traa=त्रा , tri=त्रि/त्री , trii=त्री , tru=त्रु/त्रू , truu=त्रू , tre=त्रे , trai=त्रै , tro=त्रो , trau=त्रौ
+ज्ञ (gya)
+gy=ज्ञ्/ज्ञ , gya=ज्ञ/ ज्ञा , gyaa=ज्ञा , gyi=ज्ञि/ज्ञी , gyii=ज्ञी , gyu=ज्ञु/ज्ञू , gyuu=ज्ञू , gye=ज्ञे , gyai=ज्ञै , gyo=ज्ञो , gyau=ज्ञौ 
+विशेष   वर्णहरू :
+  \` ॐ \` = \`OM\`
+  \` ं \` = \`*\`
+  \` ँ \` = \`**\`
+  \` । \` = \`.\`
+  \` ॥ \` = \`..\`
+  \`  ः  \` = \`:\`
+Combine English into Nepali text: Simply put any english text inside the curly {} brackets to keep it in English. Example: yo {mobile} mero ho. =  यो  mobile  मेरो   हो   ।  For easiness when i type '{' it must show '{}' with cursor inside to type.
+If a Nepali letter gets wrongly analyze with the preceding letter, use the slash (/) key to separate. Example: gyan =  ज्ञान , g/yan =  ग्यान   ।
+should not be case sensitive except 'N=ण्/ ण , Na=ण/ णा , न / ना , Naa=णा/ना , Ni=णि/ णी/ नि/नी , Nii=णी/नी , Nu=णु/ णू/ नु/नू , Nuu=णू/नू , Ne=णे/ने , Nai=णै/नै , No=णो/ नो , Nau=णौ/नौ , Nam=णं , Nah=नः ' which must be case sensitive.
+संयुक्त   अक्षर  (joining consonants/letters)`;
+
+        const barhakhariMap = new Map();
+        const caseSensitiveKeys = new Set();
+
+        // Manually add the specified case-sensitive keys for 'N' family
+        [
+            'N', 'Na', 'Naa', 'Ni', 'Nii', 'Nu', 'Nuu', 'Ne', 'Nai', 'No', 'Nau', 'Nam', 'Nah'
+        ].forEach(key => caseSensitiveKeys.add(key));
+
+        // Regex to extract mapping parts from a line like "k=क्/क" or "chh/x=छ्/छ"
+        const mappingRegex = /([a-zA-Z\/\*:]+)\s*=\s*([^,]+)/g;
+
+        const documentLines = documentContent.split('\n');
+        let inMappingSection = false;
+
+        documentLines.forEach(line => {
+            if (line.includes('स्वर (Vowels)')) {
+                inMappingSection = true;
+                return;
+            }
+            if (line.includes('Combine English into Nepali text:')) {
+                inMappingSection = false;
+                return;
+            }
+            if (!inMappingSection || line.trim() === '' || line.includes('विशेष   वर्णहरू :')) {
+                return;
+            }
+
+            mappingRegex.lastIndex = 0;
+            let match;
+            while ((match = mappingRegex.exec(line)) !== null) {
+                const englishKeysRaw = match[1].trim();
+                const nepaliCharsRaw = match[2].trim();
+
+                const nepaliChars = nepaliCharsRaw.split('/').map(c => c.trim()).filter(c => c.length > 0);
+                if (nepaliChars.length === 0) continue;
+
+                const englishKeys = englishKeysRaw.split('/').map(k => k.trim()).filter(k => k.length > 0);
+
+                englishKeys.forEach(key => {
+                    if (caseSensitiveKeys.has(key)) {
+                        barhakhariMap.set(key, nepaliChars);
+                    } else {
+                        barhakhariMap.set(key.toLowerCase(), nepaliChars);
+                    }
+                });
+            }
+        });
+
+        barhakhariMap.set('om', ['ॐ']);
+        barhakhariMap.set('*', ['ं']);
+        barhakhariMap.set('**', ['ँ']);
+        barhakhariMap.set('.', ['।']);
+        barhakhariMap.set('..', ['॥']);
+        barhakhariMap.set(':', ['ः']);
+
+        let selectedSuggestionIndex = -1; // New variable to track highlighted suggestion
+        let highlightedButton = null; // null, 'zwnj', or 'zwj'
+
+        function clearSuggestionHighlight() {
+            const currentHighlighted = suggestionBox.querySelector('.suggestion-btn.highlighted');
+            if (currentHighlighted) {
+                currentHighlighted.classList.remove('highlighted');
+            }
+        }
+
+        function highlightSuggestion(index) {
+            clearSuggestionHighlight();
+            const suggestions = suggestionBox.querySelectorAll('.suggestion-btn');
+            if (suggestions.length > 0 && index >= 0 && index < suggestions.length) {
+                suggestions[index].classList.add('highlighted');
+                // Scroll the highlighted suggestion into view if it's not fully visible
+                suggestions[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+            }
+        }
+
+        function displaySuggestions(suggestions) {
+            // If suggestions are currently disabled, don't display anything.
+            if (!suggestionsEnabled) {
+                suggestionBox.innerHTML = '';
+                selectedSuggestionIndex = -1;
+                return;
+            }
+
+            // Before clearing, try to preserve the currently highlighted suggestion if it exists
+            const prevHighlightedSuggestionData = selectedSuggestionIndex !== -1 && suggestionBox.children[selectedSuggestionIndex]
+                ? {
+                    nepaliChar: suggestionBox.children[selectedSuggestionIndex].dataset.nepaliChar,
+                    isWord: suggestionBox.children[selectedSuggestionIndex].dataset.isWord === 'true'
+                  }
+                : null;
+
+            suggestionBox.innerHTML = '';
+            selectedSuggestionIndex = -1; // Reset highlight initially
+
+            suggestions.forEach((sug, index) => {
+                const button = document.createElement('button');
+                button.className = 'suggestion-btn';
+                button.textContent = sug.nepaliChar;
+                button.dataset.englishKey = sug.englishKey;
+                button.dataset.nepaliChar = sug.nepaliChar;
+                button.dataset.startIndex = sug.startIndex;
+                button.dataset.suggestionIndex = index; // Store index for easy lookup
+                button.dataset.isWord = sug.isWord || false; // Indicate if it's a full word
+                if (sug.fullReplacementPhonetic) {
+                    button.dataset.fullReplacementPhonetic = sug.fullReplacementPhonetic;
+                }
+                button.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    selectSuggestion(
+                        event.target.dataset.nepaliChar,
+                        event.target.dataset.englishKey,
+                        parseInt(event.target.dataset.startIndex),
+                        event.target.dataset.isWord === 'true',
+                        event.target.dataset.fullReplacementPhonetic
+                    );
+                });
+                suggestionBox.appendChild(button);
+            });
+
+            // After rendering new suggestions, try to re-highlight the preserved one
+            if (prevHighlightedSuggestionData) {
+                const foundIndex = suggestions.findIndex(sug =>
+                    sug.nepaliChar === prevHighlightedSuggestionData.nepaliChar &&
+                    (sug.isWord || false) === prevHighlightedSuggestionData.isWord
+                );
+                if (foundIndex !== -1) {
+                    selectedSuggestionIndex = foundIndex;
+                    highlightSuggestion(selectedSuggestionIndex);
+                    return; // Don't fall through to highlight first
+                }
+            }
+            
+            // If no previous highlight was found/valid, and there are suggestions, highlight the first
+            if (suggestions.length > 0) {
+                selectedSuggestionIndex = 0;
+                highlightSuggestion(selectedSuggestionIndex);
+            }
+        }
+
+        let userOverrides = new Map();
+        let slashSplitPoints = new Set();
+        let hiddenModifierPoints = new Map(); // Stores conceptual indices of hidden chars
+        let fixedOutputSegments = new Map(); // Stores segments where output is fixed (for selected words)
+
+        // Variable to store the textarea value from the *previous* input event processing cycle
+        let lastProcessedTextAreaValue = '';
+
+        // Helper to get the full conceptual string and its mappings
+        function getConceptualDetails(visibleText) {
+            let conceptualString = '';
+            let currentConceptualIdx = 0;
+            let currentVisibleIdx = 0;
+            let conceptualToVisible = new Map(); // conceptualIndex -> visibleIndex
+            let visibleToConceptual = new Map(); // visibleIndex -> conceptualIndex
+
+            // Collect all conceptual marker indices, sort them for correct interweaving
+            const allConceptualMarkerIndices = Array.from(hiddenModifierPoints.keys())
+                .concat(Array.from(slashSplitPoints.keys()))
+                .sort((a, b) => a - b);
+
+            let markerPointer = 0;
+
+            while (currentVisibleIdx < visibleText.length || markerPointer < allConceptualMarkerIndices.length) {
+                const nextMarkerConceptualIdx = (markerPointer < allConceptualMarkerIndices.length)
+                    ? allConceptualMarkerIndices[markerPointer]
+                    : Infinity;
+
+                // Process visible characters until the next marker or end of visible string
+                while (currentConceptualIdx < nextMarkerConceptualIdx && currentVisibleIdx < visibleText.length) {
+                    visibleToConceptual.set(currentVisibleIdx, currentConceptualIdx);
+                    conceptualToVisible.set(currentConceptualIdx, currentVisibleIdx);
+                    conceptualString += visibleText[currentVisibleIdx];
+                    currentConceptualIdx++;
+                    currentVisibleIdx++;
+                }
+
+                // Process conceptual marker if present at the current conceptual index
+                if (currentConceptualIdx === nextMarkerConceptualIdx && markerPointer < allConceptualMarkerIndices.length) {
+                    const conceptualMarker = allConceptualMarkerIndices[markerPointer];
+                    if (hiddenModifierPoints.has(conceptualMarker)) {
+                        const modifier = hiddenModifierPoints.get(conceptualMarker);
+                        conceptualString += modifier;
+                        currentConceptualIdx += modifier.length;
+                    } else if (slashSplitPoints.has(conceptualMarker)) {
+                        conceptualString += '/';
+                        currentConceptualIdx += 1;
+                    }
+                    markerPointer++;
+                } else if (currentVisibleIdx >= visibleText.length && markerPointer >= allConceptualMarkerIndices.length) {
+                    break; // End of both visible and markers
+                } else {
+                    // This case indicates an error in logic or a desync.
+                    // It should ideally not be reached if maps are consistent.
+                    break;
+                }
+            }
+            return {
+                conceptualString: conceptualString,
+                conceptualLength: currentConceptualIdx,
+                conceptualToVisibleMap: conceptualToVisible,
+                visibleToConceptualMap: visibleToConceptual
+            };
+        }
+
+        // Helper to adjust conceptual maps based on a visible text change (deletion/insertion)
+        function adjustConceptualMapsBasedOnVisibleChange(oldVisibleText, currentVisibleText, visibleChangeStart, visibleOldEnd, visibleNewEnd) {
+            const oldConceptualDetails = getConceptualDetails(oldVisibleText);
+            const oldConceptualString = oldConceptualDetails.conceptualString;
+            const oldVisibleToConceptualMap = oldConceptualDetails.visibleToConceptualMap;
+
+            // Determine the conceptual range corresponding to the visible change in old string
+            const conceptualChangeStart = oldVisibleToConceptualMap.has(visibleChangeStart)
+                ? oldVisibleToConceptualMap.get(visibleChangeStart)
+                : oldConceptualString.length;
+
+            let conceptualOldEnd;
+            if (visibleOldEnd === oldVisibleText.length) {
+                conceptualOldEnd = oldConceptualString.length;
+            } else {
+                conceptualOldEnd = oldVisibleToConceptualMap.get(visibleOldEnd);
+            }
+
+            const conceptualDeletedLength = conceptualOldEnd - conceptualChangeStart;
+            const conceptualInsertedLength = visibleNewEnd - visibleChangeStart; // For now, this is based on visible text inserted
+
+            const shiftAmount = conceptualInsertedLength - conceptualDeletedLength;
+
+            const newHiddenModifierPoints = new Map();
+            const newSlashSplitPoints = new Set();
+            const newUserOverrides = new Map();
+            const newFixedOutputSegments = new Map(); // For fixed output segments
+
+            hiddenModifierPoints.forEach((modifier, oldConceptualIdx) => {
+                if (oldConceptualIdx < conceptualChangeStart) {
+                    newHiddenModifierPoints.set(oldConceptualIdx, modifier);
+                } else if (oldConceptualIdx >= conceptualOldEnd) {
+                    newHiddenModifierPoints.set(oldConceptualIdx + shiftAmount, modifier);
+                }
+            });
+
+            slashSplitPoints.forEach((oldConceptualIdx) => {
+                if (oldConceptualIdx < conceptualChangeStart) {
+                    newSlashSplitPoints.add(oldConceptualIdx);
+                } else if (oldConceptualIdx >= conceptualOldEnd) {
+                    newSlashSplitPoints.add(oldConceptualIdx + shiftAmount);
+                }
+            });
+
+            userOverrides.forEach((override, oldConceptualIdx) => {
+                if (oldConceptualIdx < conceptualChangeStart) {
+                    newUserOverrides.set(oldConceptualIdx, override);
+                } else if (oldConceptualIdx >= conceptualOldEnd) {
+                    newUserOverrides.set(oldConceptualIdx + shiftAmount, override);
+                }
+            });
+
+            // Adjust fixedOutputSegments
+            fixedOutputSegments.forEach((segment, oldConceptualIdx) => {
+                if (oldConceptualIdx < conceptualChangeStart) {
+                    // Segment completely before the change
+                    newFixedOutputSegments.set(oldConceptualIdx, segment);
+                } else if (oldConceptualIdx >= conceptualOldEnd) {
+                    // Segment completely after the change, shift its start and end
+                    newFixedOutputSegments.set(oldConceptualIdx + shiftAmount, {
+                        conceptualEnd: segment.conceptualEnd + shiftAmount,
+                        devanagariWord: segment.devanagariWord
+                    });
+                } else {
+                    // Segment overlaps with or is fully contained within the change.
+                    // This means it was deleted or partially modified. We remove it.
+                    // This is the desired behavior for allowing editing.
+                }
+            });
+
+            hiddenModifierPoints = newHiddenModifierPoints;
+            slashSplitPoints = newSlashSplitPoints;
+            userOverrides = newUserOverrides;
+            fixedOutputSegments = newFixedOutputSegments; // Update global fixed output map
+
+            // Prune maps based on the *new* full conceptual length
+            const { conceptualLength: newFullConceptualLength } = getConceptualDetails(currentVisibleText);
+
+            const finalPrunedHiddenModifierPoints = new Map();
+            hiddenModifierPoints.forEach((val, key) => {
+                if (key < newFullConceptualLength) finalPrunedHiddenModifierPoints.set(key, val);
+            });
+            hiddenModifierPoints = finalPrunedHiddenModifierPoints;
+
+            const finalPrunedSlashSplitPoints = new Set();
+            slashSplitPoints.forEach(key => {
+                if (key < newFullConceptualLength) finalPrunedSlashSplitPoints.add(key);
+            });
+            slashSplitPoints = finalPrunedSlashSplitPoints;
+
+            const finalPrunedUserOverrides = new Map();
+            userOverrides.forEach((val, key) => {
+                if (key < newFullConceptualLength) finalPrunedUserOverrides.set(key, val);
+            });
+            userOverrides = finalPrunedUserOverrides;
+            
+            // Prune fixedOutputSegments
+            const finalPrunedFixedOutputSegments = new Map();
+            fixedOutputSegments.forEach((val, key) => {
+                if (key < newFullConceptualLength) {
+                    // Also ensure the conceptualEnd is not beyond the new total length
+                    if (val.conceptualEnd <= newFullConceptualLength) {
+                        finalPrunedFixedOutputSegments.set(key, val);
+                    } else {
+                        // If the segment's end goes past the new conceptual length,
+                        // it means it was partially truncated from the right. Remove it.
+                        // The user can re-select if needed.
+                    }
+                }
+            });
+            fixedOutputSegments = finalPrunedFixedOutputSegments;
+        }
+
+
+        // Global map to store output character to conceptual range mapping
+        let outputToConceptualMap = []; // Stores { conceptualStart, conceptualEnd } for each output char
+
+        // Function to convert a phonetic string to its Devanagari equivalent (partial conversion)
+        function phoneticToDevanagari(phoneticInput) {
+            let devanagariOutput = '';
+            let tempPhonetic = phoneticInput;
+            let i = 0;
+
+            while (i < tempPhonetic.length) {
+                // Handle ZWNJ and ZWJ characters directly and pass them through.
+                if (tempPhonetic[i] === '\u200c' || tempPhonetic[i] === '\u200d') {
+                    devanagariOutput += tempPhonetic[i];
+                    i++;
+                    continue;
+                }
+
+                // Check for longest key match from the transliteration map
+                let matched = false;
+                let longestMatchKey = '';
+                let bestNepaliChar = '';
+
+                // Try longest match first
+                for (let len = Math.min(6, tempPhonetic.length - i); len > 0; len--) {
+                    let segment = tempPhonetic.substring(i, i + len);
+                    let lookupKey = caseSensitiveKeys.has(segment) ? segment : segment.toLowerCase();
+
+                    if (barhakhariMap.has(lookupKey)) {
+                        longestMatchKey = segment;
+                        break;
+                    }
+                }
+
+                if (longestMatchKey) {
+                    const forms = barhakhariMap.get(caseSensitiveKeys.has(longestMatchKey) ? longestMatchKey : longestMatchKey.toLowerCase());
+                    let selectedForm = forms[0]; // Default to first form (often halanta for consonants)
+
+                    // Check if followed by backslash (\) in conceptual input
+                    let matchLength = longestMatchKey.length;
+                    const nextIndex = i + matchLength;
+                    if (nextIndex < tempPhonetic.length && tempPhonetic[nextIndex] === '\\' && selectedForm.endsWith('्')) {
+                        selectedForm = selectedForm.slice(0, -1);
+                        matchLength += 1;
+                    }
+
+                    devanagariOutput += selectedForm;
+                    i += matchLength;
+                    matched = true;
+                } 
+
+                // If no match found, append the character as is
+                if (!matched) {
+                    devanagariOutput += tempPhonetic[i];
+                    i++;
+                }
+            }
+            return devanagariOutput;
+        }
+
+        // --- Devanagari to Simplified Phonetic Map for reverse conversion ---
+        // This map is an approximation used to populate the input box with a phonetic spelling
+        // when a full Nepali word suggestion is selected. It maps common Devanagari characters
+        // and combinations to their most common (simplified) phonetic representations.
+        const devanagariToSimplifiedPhoneticMap = new Map([
+            // Vowels
+            ['अ', 'a'], ['आ', 'aa'], ['इ', 'i'], ['ई', 'ee'], ['उ', 'u'], ['ऊ', 'oo'],
+            ['ए', 'e'], ['ऐ', 'ai'], ['ओ', 'o'], ['औ', 'au'],
+
+            // Special symbols
+            ['ॐ', 'om'], ['।', '.'], ['॥', '..'],['ृ','ri'],['ँ',''], ['ं',''], ['्',''], [ '?','?'], ['!','!'], ['ः',''],
+            
+         	//Barhakhari (consolidated to prioritize common simplified forms)
+            ['क्', 'k'], ['क', 'ka'], ['का', 'kaa'], ['कि', 'ki'], ['की', 'ki'], ['कु', 'ku'], ['कू', 'ku'], ['के', 'ke'], 
+            ['कै', 'kai'], ['को', 'ko'], ['कौ', 'kau'],
+            ['ख्', 'kh'],['ख', 'kha'], ['खा', 'kha'], ['खि', 'khi'], ['खी', 'khi'], ['खु', 'khu'], ['खू', 'khu'], 
+            ['खे', 'khe'], ['खै', 'khai'], ['खो', 'kho'], ['खौ', 'khau'],
+            ['ग्', 'g'], ['ग', 'ga'], ['गा', 'gaa'], ['गि', 'gi'], ['गी', 'gi'], ['गु', 'gu'], ['गू', 'gu'], ['गे', 'ge'], 
+            ['गै', 'gai'], ['गो', 'go'], ['गौ', 'gau'], 
+            ['घ्', 'gh'], ['घ', 'gha'], ['घा', 'ghaa'], ['घि', 'ghi'], ['घी', 'ghi'], ['घु', 'ghu'], ['घू', 'ghu'], 
+            ['घे', 'ghe'], ['घै', 'ghai'], ['घो', 'gho'], ['घौ', 'ghau'],
+            ['ङ्', 'ng'], ['ङ', 'nga'], ['ङा', 'ngaa'], ['ङि', 'ngi'], ['ङी', 'ngii'], ['ङु', 'ngu'], ['ङू', 'nguu'], 
+            ['ङे', 'nge'], ['ङै', 'ngai'], ['ङो', 'ngo'], ['ङौ', 'ngau'],  
+            ['च्', 'ch'], ['च', 'cha'], ['चा', 'chaa'], ['चि', 'chi'], ['ची', 'chi'], ['चु', 'chu'], ['चू', 'chu'], 
+            ['चे', 'che'], ['चै', 'chai'], ['चो', 'cho'], ['चौ', 'chau'],
+            ['छ्', 'chh'], ['छ', 'chha'], ['छा', 'chhaa'], ['छि', 'chhi'], ['छी', 'chhi'], ['छु', 'chhu'], ['छू', 'chhu'], 
+            ['छे', 'chhe'], ['छै', 'chhai'], ['छो', 'chho'], ['छौ', 'chhau'],
+            ['ज्', 'j'], ['ज', 'ja'], ['जा', 'jaa'], ['जि', 'ji'], ['जी', 'ji'], ['जु', 'ju'], ['जू', 'ju'], ['जे', 'je'], 
+            ['जै', 'jai'], ['जो', 'jo'], ['जौ', 'jau'], 
+            ['झ्', 'jh'], ['झ', 'jha'], ['झा', 'jhaa'], ['झि', 'jhi'], ['झी', 'jhi'], ['झु', 'jhu'], ['झू', 'jhu'], 
+            ['झे', 'jhe'], ['झै', 'jhai'], ['झो', 'jho'], ['झौ', 'jhau'],  
+            ['ञ्', 'ny'], ['ञ', 'nya'], ['ञा', 'nyaa'], ['ञि', 'nyi'], ['ञी', 'nyi'], ['ञु', 'nyu'], ['ञू', 'nyu'], 
+            ['ञे', 'nye'], ['ञै', 'nyai'], ['ञो', 'nyo'], ['ञौ', 'nyau'], 
+            ['ट्', 't'], ['ट', 'ta'], ['टा', 'taa'], ['टि', 'ti'], ['टी', 'ti'], ['टु', 'tu'], ['टू', 'tu'], ['टे', 'te'], 
+            ['टै', 'tai'], ['टो', 'to'], ['टौ', 'tau'], 
+            ['ठ्', 'th'], ['ठ', 'tha'], ['ठा', 'thaa'], ['ठि', 'thi'], ['ठी', 'thi'], ['ठु', 'thu'], ['ठू', 'thu'], 
+            ['ठे', 'the'], ['ठै', 'thai'], ['ठो', 'tho'], ['ठौ', 'thau'],
+            ['ड्', 'd'], ['ड', 'da'], ['डा', 'daa'], ['डि', 'di'], ['डी', 'di'], ['डु', 'du'], ['डू', 'du'], ['डे', 'de'], 
+            ['डै', 'dai'], ['डो', 'do'], ['डौ', 'dau'],
+            ['ढ्', 'dh'], ['ढ', 'dha'], ['ढा', 'dhaa'], ['ढि', 'dhi'], ['ढी', 'dhi'], ['ढु', 'dhu'], ['ढू', 'dhu'], 
+            ['धे', 'dhe'], ['धै', 'dhai'], ['धो', 'dho'], ['धौ', 'dhau'], 
+            ['ण्', 'n'], ['ण', 'na'], ['णा', 'naa'], ['णि', 'ni'], ['णी', 'ni'], ['णु', 'nu'], ['णू', 'nu'], ['णे', 'ne'], 
+            ['णै', 'nai'], ['णो', 'no'], ['णौ', 'nau'],
+            ['त्', 't'], ['त', 'ta'], ['ता', 'taa'], ['ति', 'ti'], ['ती', 'ti'], ['तु', 'tu'], ['तू', 'tu'], ['ते', 'te'], 
+            ['तै', 'tai'], ['तो', 'to'], ['तौ', 'tau'], 
+            ['थ्', 'th'], ['थ', 'tha'], ['था', 'thaa'], ['थि', 'thi'], ['थी', 'thi'], ['थु', 'thu'], ['थू', 'thu'], 
+            ['थे', 'the'], ['थै', 'thai'], ['थो', 'tho'], ['थौ', 'thau'], 
+            ['द्', 'd'], ['द', 'da'], ['दा', 'daa'], ['दि', 'di'], ['दी', 'di'], ['दु', 'du'], ['दू', 'du'], ['दे ', 'de'], 
+            ['दै', 'dai'], ['दो', 'do'], ['दौ', 'dau'],  
+            ['ध्', 'dh'], ['ध', 'dha'], ['धा', 'dhaa'], ['धि', 'dhi'], ['धी', 'dhi'], ['धु', 'dhu'], ['धू', 'dhu'], 
+   			['धे', 'dhe'], ['धै', 'dhai'], ['धो', 'dho'], ['धौ', 'dhau'], 
+            ['न्', 'n'], ['न', 'na'], ['ना', 'naa'], ['नि', 'ni'], ['नी', 'ni'], ['nu', 'nu'], ['नू', 'nu'], ['ने', 'ne'], 
+            ['नै', 'nai'], ['नो', 'no'], ['नौ', 'nau'], 
+            ['प्', 'p'], ['प', 'pa'], ['पा', 'paa'], ['पि', 'pi'], ['पी', 'pi'], ['पु', 'pu'], ['पू', 'pu'], ['पे', 'pe'], 
+            ['पै', 'pai'], ['पो', 'po'], ['पौ', 'pau'],
+            ['फ्', 'ph'], ['फ', 'pha'], ['फा', 'phaa'], ['फि', 'phi'], ['फी', 'phi'], ['फु', 'phu'], ['फू', 'phu'], 
+            ['फे', 'phe'], ['फै', 'phai'], ['फो', 'fo'], ['फौ', 'phau'], 
+            ['ब्', 'b'], ['ब', 'ba'], ['बा', 'baa'], ['बि', 'bi'], ['बी', 'bi'], ['बु', 'bu'], ['बू', 'bu'], ['बे', 'be'], 
+            ['बै', 'bai'], ['बो', 'bo'], ['बौ', 'bau'],
+            ['भ्', 'bh'], ['भ', 'bha'], ['भा', 'bhaa'], ['भि', 'bhi'], ['भी', 'bhi'], ['भु', 'bhu'], ['भू', 'bhu'], 
+            ['भे', 'bhe'], ['भै', 'bhai'], ['भो', 'bho'], ['भौ', 'bhau'], 
+            ['म्', 'm'], ['म', 'ma'], ['मा', 'maa'], ['मि', 'mi'], ['मी', 'mi'], ['मु', 'mu'], ['मू', 'mu'], ['मे', 'me'], 
+            ['मै', 'mai'], ['मो', 'mo'], ['मौ', 'mau'], 
+            ['य्', 'y'], ['य', 'ya'], ['या', 'yaa'], ['यि', 'yi'], ['यी', 'yi'], ['यु', 'yu'], ['यू', 'yu'], ['ये', 'ye'], 
+            ['यै', 'yai'], ['यो', 'yo'], ['यौ', 'yau'], 
+            ['र्', 'r'], ['र', 'ra'], ['रा', 'raa'], ['रि', 'ri'], ['री', 'ri'], ['रु', 'ru'], ['रू', 'ru'], ['रे', 're'], 
+            ['रै', 'rai'], ['रो', 'ro'], ['रौ', 'rau'], 
+            ['ल्', 'l'], ['ल', 'la'], ['ला', 'laa'], ['लि', 'li'], ['ली', 'li'], ['लु', 'lu'], ['लू', 'lu'], ['ले', 'le'], 
+            ['लै', 'lai'], ['लो', 'lo'], ['लौ', 'lau'],
+            ['व्', 'w'], ['व', 'wa'], ['वा', 'waa'], ['वि', 'wi'], ['वी', 'wi'], ['वु', 'wu'], ['वू', 'wu'], ['वे', 'we'], 
+            ['वै', 'wai'], ['वो', 'wo'], ['वौ', 'wau'], 
+            ['श्', 'sh'], ['श', 'sha'], ['शा', 'shaa'], ['शि', 'shi'], ['शी', 'shi'], ['शु', 'shu'], ['शू', 'shu'], 
+            ['शे', 'she'], ['शै', 'shai'], ['शो', 'sho'], ['शौ', 'shau'], 
+            ['ष्', 'sh'], ['ष', 'sha'], ['षा', 'shaa'], ['षि', 'shi'], ['षी', 'shi'], ['षु', 'shu'], ['षू', 'shu'], 
+            ['षे', 'she'], ['षै', 'shai'], ['षो', 'sho'], ['षौ', 'shau'], 
+            ['स्', 's'], ['स', 'sa'], ['सा', 'saa'], ['सि', 'si'], ['सी', 'si'], ['सु', 'su'], ['सू', 'su'], ['से', 'se'], 
+            ['सै', 'sai'], ['सो', 'so'], ['सौ', 'sau'],  
+            ['ह्', 'h'], ['ह', 'ha'], ['हा', 'haa'], ['हि', 'hi'], ['ही', 'hi'], ['हु', 'hu'], ['हू', 'hu'], ['हे', 'he'], 
+            ['है', 'hai'], ['हो', 'ho'], ['हौ', 'hau'], 
+            ['क्ष्', 'ksh'], ['क्ष', 'ksha'], ['क्षा', 'kshaa'], ['क्षि', 'kshi'], ['क्षी', 'kshi'], ['क्षु', 'kshu'], ['क्षू', 'kshu'], 
+            ['क्षे', 'kshe'], ['क्षै', 'kshai'], ['क्षो', 'kshau'], ['क्षौ', 'kshau'], 
+            ['त्र्', 'tr'], ['त्र', 'tra'], ['त्रा', 'traa'], ['त्रि', 'tri'], ['त्री', 'tri'], ['त्रु ', 'tru'], ['त्रू', 'tru'], 
+            ['त्रे', 'tre'], ['त्रै', 'trai'], ['त्रो', 'tro'], ['त्रौ', 'trau'], 
+            ['ज्ञ्', 'gy'], ['ज्ञ', 'gya'], ['ज्ञा', 'gyaa'], ['ज्ञि', 'gyi'], ['ज्ञी', 'gyi'], ['ज्ञु ', 'gyu'], ['ज्ञू', 'gyu'], 
+            ['ज्ञे', 'gye'], ['ज्ञै', 'gyai'], ['ज्ञो', 'gyo'], ['ज्ञौ', 'gyau'], 
+            
+            // --- Add specific conjunct mappings for Devanagari to phonetic conversion ---
+            //['ष्ठ', 'shth'], // for 'निष्ठुर' and similar words
+            //['ष्ट', 'shta'], // for 'राष्ट्र' and similar words
+            //['श्ठ', 'shtha'], // for consistency, in case of similar phonetic interpretation
+            //['स्त', 'sta'], // another common conjunct
+            //['न्ठ', 'nth'], // for words like 'कण्ठ'
+            //['न्द्य', 'ndy'], // for words like 'सन्ध्या'
+            //['ण्ठ', 'Nth'], // Case-sensitive for 'N' family
+            //['न्द्य', 'ndy'], // Case-sensitive for 'N' family
+            //['श्र', 'shr'], // for 'श्री'
+            //['द्य', 'dy'], // for 'विद्या'
+            // ['द्व', 'dw'], // for 'द्वेष'
+            //['ह्य', 'hy'] // for 'चिन्ह'
+            // End of new specific mappings
+                                                                  
+        ]);
+
+        function convertDevanagariToSimplifiedPhonetic(devanagariInput) {
+            let phoneticOutput = '';
+            for (let i = 0; i < devanagariInput.length; i++) {
+                let char = devanagariInput[i];
+                let matched = false;
+
+                // Prioritize matching multi-character Devanagari sequences first
+                // Try to match up to 4 characters for complex conjuncts (e.g., 'राष्ट्रिय')
+                for (let len = Math.min(4, devanagariInput.length - i); len > 1; len--) {
+                    let segment = devanagariInput.substring(i, i + len);
+                    if (devanagariToSimplifiedPhoneticMap.has(segment)) {
+                        phoneticOutput += devanagariToSimplifiedPhoneticMap.get(segment);
+                        i += len - 1; // Advance index by matched length minus 1 (loop will add 1)
+                        matched = true;
+                        break;
+                    }
+                }
+
+                if (!matched) {
+                    // Check for special case: consonant + ृ
+                    if (i + 1 < devanagariInput.length && devanagariInput[i + 1] === 'ृ' &&
+                        devanagariToSimplifiedPhoneticMap.has(char) &&
+                        devanagariToSimplifiedPhoneticMap.get(char).endsWith('a')) {
+                        phoneticOutput += devanagariToSimplifiedPhoneticMap.get(char).slice(0, -1) + 'ri';
+                        i += 1;
+                        matched = true;
+                    } else if (devanagariToSimplifiedPhoneticMap.has(char)) {
+                        phoneticOutput += devanagariToSimplifiedPhoneticMap.get(char);
+                        matched = true;
+                    }
+                }
+                
+                // Fallback for unmapped characters
+                if (!matched) {
+                    phoneticOutput += char; // Append as is if no mapping found
+                }
+            }
+            return phoneticOutput;
+        }
+
+
+        // --- Dynamically load the Nepali dictionary from JSON ---
+        let nepaliDictionary = []; // Will be populated asynchronously
+
+        async function loadNepaliDictionary() {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/gurusite/nepali_dictionary/main/sabdakosh.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const jsonData = await response.json();
+                // Extract unique "word" fields (assuming they are Devanagari Nepali words)
+                nepaliDictionary = [...new Set(jsonData.map(entry => entry.word))].filter(word => word && /^[\u0900-\u097F]+$/.test(word)); // Filter to Devanagari only
+                console.log(`Loaded ${nepaliDictionary.length} unique Nepali words from sabdakosh.json`);
+            } catch (error) {
+                console.error('Error loading Nepali dictionary:', error);
+                // Fallback to a small hardcoded dictionary if fetch fails
+                nepaliDictionary = [
+                    "नेपाल", "नमस्कार", "स्वागत", "के छ खबर", "शुभकामना", "शान्ति", "खुसी", "सपना", "यात्रा", "पहाड",
+                    // ... (keep the original small list as fallback)
+                ];
+            }
+        }
+
+        // Load the dictionary on page load
+        window.addEventListener('load', async () => {
+            await loadNepaliDictionary();
+            // After loading, perform initial updates
+            updateOutput();
+            generateAndDisplaySuggestions();
+        });
+
+
+        // --- Common Spelling Dictionary (English to Nepali direct mappings, case-insensitive) ---
+        const commonSpellingDictionary = new Map([
+            ['nepal', 'नेपाल'],
+	    ['kathmandu', 'काठमणडौँ'],
+	    ['himalaya', 'हिमालय'],
+            // Add more common mappings as needed, e.g.:
+            // ['kathmandu', 'काठमाडौं'],
+            // ['himalaya', 'हिमालय'],
+            // ['everest', 'सगरमाथा'],
+            // ['namaste', 'नमस्ते']
+        ]);
+
+
+        async function generateAndDisplaySuggestions() {
+            // Only generate and display suggestions if the feature is enabled
+            if (!suggestionsEnabled) {
+                displaySuggestions([]); // Ensure suggestions are cleared if disabled
+                return;
+            }
+
+            const { conceptualString: conceptualInput } = getConceptualDetails(textarea.value);
+            const conceptualCursorPos = getConceptualDetails(textarea.value).visibleToConceptualMap.get(textarea.selectionStart) || conceptualInput.length;
+
+            let inEnglishBlock = false;
+            let textBeforeCursorVisible = textarea.value.substring(0, textarea.selectionStart);
+            let openBraceCount = (textBeforeCursorVisible.match(/{/g) || []).length;
+            let closeBraceCount = (textBeforeCursorVisible.match(/}/g) || []).length;
+            if (openBraceCount > closeBraceCount) {
+                inEnglishBlock = true;
+            }
+
+            if (inEnglishBlock) {
+                displaySuggestions([]);
+                return;
+            }
+
+            // Find the start of the current phonetic segment in the conceptual string for barhakhari suggestions (respects '/')
+            let currentConceptualSegmentStartForBarhakhari = 0;
+            for (let k = conceptualCursorPos - 1; k >= 0; k--) {
+                if (conceptualInput[k] === ' ' || conceptualInput[k] === '/') {
+                    currentConceptualSegmentStartForBarhakhari = k + 1;
+                    break;
+                }
+            }
+            let currentConceptualPhoneticSequenceForBarhakhari = conceptualInput.substring(currentConceptualSegmentStartForBarhakhari, conceptualCursorPos);
+            
+            // For word suggestions, find the start of the "word" in the conceptual input (only space is boundary)
+            let wordSuggestionConceptualStart = 0;
+            for (let k = conceptualCursorPos - 1; k >= 0; k--) {
+                if (conceptualInput[k] === ' ') { // Only space acts as a word boundary for dictionary words
+                    wordSuggestionConceptualStart = k + 1;
+                    break;
+                }
+            }
+            // The conceptual sequence that forms the current potential word for dictionary lookup
+            let currentConceptualWordPhoneticSequence = conceptualInput.substring(wordSuggestionConceptualStart, conceptualCursorPos);
+
+
+            // Get the Devanagari prefix from the *outputArea* based on the input cursor position
+            const outputText = outputArea.value;
+            let outputCursorPos = 0; 
+            
+            // Find the corresponding output cursor position by iterating through the outputToConceptualMap
+            // This ensures the output prefix correctly aligns with the input cursor.
+            let foundOutputCursorPos = false;
+            for (let i = 0; i < outputToConceptualMap.length; i++) {
+                const mapEntry = outputToConceptualMap[i];
+                if (conceptualCursorPos >= mapEntry.conceptualStart && conceptualCursorPos <= mapEntry.conceptualEnd) {
+                    // If the conceptual cursor is *within* an output character's conceptual range,
+                    // the output cursor should be at that output character's index + its length up to the conceptual cursor.
+                    // This is a simplified approach, ideally it maps proportionally.
+                    // For now, let's assume it aligns with the start of the output character.
+                    outputCursorPos = i + (conceptualCursorPos - mapEntry.conceptualStart);
+                    foundOutputCursorPos = true;
+                    break;
+                }
+                if (conceptualCursorPos < mapEntry.conceptualStart) {
+                    // If the conceptual cursor is before this map entry, then it must be at the end of the previous output character.
+                    outputCursorPos = i; // The current output char index
+                    foundOutputCursorPos = true;
+                    break;
+                }
+            }
+            if (!foundOutputCursorPos) {
+                 // If the conceptual cursor is past all mapped output characters, it's at the end of the output.
+                outputCursorPos = outputText.length;
+            }
+
+            // Ensure outputCursorPos doesn't exceed actual output length
+            outputCursorPos = Math.min(outputCursorPos, outputText.length);
+
+            // Find the start of the current word in the output text
+            let outputWordStart = outputText.lastIndexOf(' ', outputCursorPos - 1) + 1;
+            let currentOutputDevanagariPrefix = outputText.substring(outputWordStart, outputCursorPos);
+            // Trim any any non-letter characters from the start/end of the prefix that might come from spacing/punctuation
+            currentOutputDevanagariPrefix = currentOutputDevanagariPrefix.replace(/^[^\p{L}]*|[^\p{L}]*$/gu, '');
+
+
+            let allSuggestions = [];
+            let historyData = {};
+
+            // Fetch history based on the full phonetic input sequence if it exists,
+            // as barhakhari suggestions still rely on it.
+            if (currentConceptualPhoneticSequenceForBarhakhari.length > 0 && db && userId) {
+                try {
+                    const historyDocRef = doc(db, 'artifacts', appId, 'users', userId, 'typingHistory', currentConceptualPhoneticSequenceForBarhakhari.toLowerCase());
+                    const historyDocSnap = await getDoc(historyDocRef);
+                    if (historyDocSnap.exists()) {
+                        historyData = historyDocSnap.data();
+                    }
+                } catch (error) {
+                    console.error("Error fetching typing history:", error);
+                }
+            }
+
+            // 1. Add Barhakhari (single-character) suggestions based on *input* (respects '/')
+            if (currentConceptualPhoneticSequenceForBarhakhari.length > 0) {
+                for (let i = currentConceptualPhoneticSequenceForBarhakhari.length; i > 0; i--) {
+                    let segment = currentConceptualPhoneticSequenceForBarhakhari.substring(currentConceptualPhoneticSequenceForBarhakhari.length - i);
+                    let lookupKey = caseSensitiveKeys.has(segment) ? segment : segment.toLowerCase();
+
+                    if (barhakhariMap.has(lookupKey)) {
+                        barhakhariMap.get(lookupKey).forEach(nepaliChar => {
+                            const existing = allSuggestions.find(s => s.nepaliChar === nepaliChar && s.isWord === false);
+                            if (!existing) {
+                                allSuggestions.push({
+                                    englishKey: segment,
+                                    nepaliChar: nepaliChar,
+                                    startIndex: currentConceptualSegmentStartForBarhakhari + (currentConceptualPhoneticSequenceForBarhakhari.length - segment.length),
+                                    count: historyData[nepaliChar] || 0,
+                                    isWord: false
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+
+            // 2. Add common spelling word suggestions based on *input* phonetic prefix (space boundary)
+            if (currentConceptualWordPhoneticSequence.length > 0) {
+                const lowercasePrefix = currentConceptualWordPhoneticSequence.toLowerCase();
+                const matchedCommonKeys = Array.from(commonSpellingDictionary.keys()).filter(key => key.startsWith(lowercasePrefix));
+                matchedCommonKeys.forEach(matchedKey => {
+                    const nepaliWord = commonSpellingDictionary.get(matchedKey);
+                    // Ensure no duplicate with existing suggestions
+                    const isDuplicate = allSuggestions.some(sug => sug.nepaliChar === nepaliWord && sug.isWord);
+                    if (!isDuplicate) {
+                        allSuggestions.push({
+                            englishKey: currentConceptualWordPhoneticSequence, 
+                            nepaliChar: nepaliWord,
+                            startIndex: wordSuggestionConceptualStart, 
+                            count: historyData[nepaliWord] || 0,
+                            isWord: true,
+                            fullReplacementPhonetic: matchedKey // The full English spelling to insert
+                        });
+                    }
+                });
+            }
+
+            // 3. Add full Nepali word suggestions based on *output* (Devanagari prefix)
+            if (currentOutputDevanagariPrefix.length > 0) {
+                const matchedWords = nepaliDictionary.filter(word => word.startsWith(currentOutputDevanagariPrefix));
+                matchedWords.forEach(word => {
+                    // Ensure word suggestions don't duplicate existing barhakhari suggestions if the word is just a single character
+                    const isDuplicateBarhakhari = allSuggestions.some(sug => sug.nepaliChar === word && !sug.isWord);
+                    // Also check for duplicate with common suggestions
+                    const isDuplicateCommon = allSuggestions.some(sug => sug.nepaliChar === word && sug.isWord);
+                    if (!isDuplicateBarhakhari && !isDuplicateCommon) {
+                         // We use the full conceptual phonetic sequence for the 'englishKey' when a word is suggested.
+                         // This is the sequence from the input that forms the potential word.
+                        allSuggestions.push({
+                            englishKey: currentConceptualWordPhoneticSequence, 
+                            nepaliChar: word,
+                            startIndex: wordSuggestionConceptualStart, // Use the word-level start
+                            count: historyData[word] || 0, // Use history for words too
+                            isWord: true
+                        });
+                    }
+                });
+            }
+
+            // 4. Add special 'ri' suggestions after halanta consonants
+            const sequenceLC = currentConceptualPhoneticSequenceForBarhakhari.toLowerCase();
+            if (sequenceLC.endsWith('ri') && sequenceLC.length > 2) {
+                const prefix = currentConceptualPhoneticSequenceForBarhakhari.slice(0, -2);
+                const prefixLC = prefix.toLowerCase();
+                const riForms = barhakhariMap.get('ri') || []; // Get forms for 'ri'
+                const riMatra = riForms.find(f => f === 'ृ') || 'ृ'; // Get the matra 'ृ'
+
+                // Scan backwards to find the longest possible consonant key at the end of prefix
+                let foundConsonant = false;
+                for (let len = Math.min(6, prefix.length); len > 0; len--) {
+                    const consonantSegment = prefix.slice(-len);
+                    const lookupKey = caseSensitiveKeys.has(consonantSegment) ? consonantSegment : consonantSegment.toLowerCase();
+
+                    if (barhakhariMap.has(lookupKey)) {
+                        const forms = barhakhariMap.get(lookupKey);
+                        const halantaForms = forms.filter(f => f.endsWith('्'));
+
+                        if (halantaForms.length > 0) {
+                            foundConsonant = true;
+                            const prePrefix = prefix.slice(0, -len);
+                            // const prePrefixDev = phoneticToDevanagari(prePrefix);  // Remove this
+
+                            halantaForms.forEach(form => {
+                                const baseConsonant = form.slice(0, -1);
+                                const combined = baseConsonant + riMatra;  // Change to this, without prePrefixDev
+
+                                // Ensure no duplicate
+                                const existing = allSuggestions.find(s => s.nepaliChar === combined && s.isWord === false);
+                                if (!existing) {
+                                    allSuggestions.push({
+                                        englishKey: consonantSegment + 'ri',  // Change to this, without prePrefix
+                                        nepaliChar: combined,
+                                        startIndex: currentConceptualSegmentStartForBarhakhari + prefix.length - len,
+                                        count: historyData[combined] || 0,
+                                        isWord: false
+                                    });
+                                }
+                            });
+                            break; // Stop after finding and adding the longest matching consonant
+                        }
+                    }
+                }
+
+                // If no consonant found (fallback, though unlikely), skip
+            }
+
+            // Sort suggestions: Barhakhari first (by count then length), then Words (by count then length)
+            const sortedSuggestions = allSuggestions.sort((a, b) => {
+                // Primary sort: isWord (false comes before true, so Barhakhari first)
+                if (a.isWord === b.isWord) {
+                    // Secondary sort: count (higher count first)
+                    if (b.count !== a.count) {
+                        return b.count - a.count;
+                    }
+                    // Tertiary sort: length of nepaliChar (shorter length first for barhakhari, longer for words)
+                    // Or, for barhakhari, longer English key first to prioritize full matches
+                    if (!a.isWord && !b.isWord) { // For barhakhari, prioritize longer English key
+                         return b.englishKey.length - a.englishKey.length;
+                    } else if (a.isWord && b.isWord) { // For words, prioritize shorter Nepali word
+                        return a.nepaliChar.length - b.nepaliChar.length;
+                    }
+                }
+                return (a.isWord === false ? -1 : 1); // False (Barhakhari) comes before true (word)
+            });
+
+            displaySuggestions(sortedSuggestions);
+        }
+
+
+        async function selectSuggestion(nepaliChar, englishKey, startIndex, isWord = false, fullReplacementPhonetic = undefined) {
+            const currentVisibleValue = textarea.value;
+            // Get conceptual details based on the current visible value *before* any changes
+            const { conceptualToVisibleMap, visibleToConceptualMap, conceptualLength } = getConceptualDetails(currentVisibleValue);
+            const cursorActualVisiblePos = textarea.selectionStart;
+
+            let segmentVisibleStart = 0;
+            let segmentVisibleEnd = cursorActualVisiblePos; // Default end to cursor position
+
+            if (isWord) {
+                // For a word suggestion, `startIndex` is the conceptual start of the phonetic word fragment.
+                // `englishKey` is the *full conceptual phonetic fragment* that triggered this word suggestion (e.g., "sa/m").
+                const conceptualStartOfWordFragment = startIndex;
+                const conceptualEndOfWordFragment = startIndex + englishKey.length; // The conceptual range to replace
+
+                // Convert conceptual start to visible start
+                segmentVisibleStart = conceptualToVisibleMap.has(conceptualStartOfWordFragment)
+                    ? conceptualToVisibleMap.get(conceptualStartOfWordFragment)
+                    : 0; // Fallback, though ideally it should always map if input is synchronized
+
+                // Convert conceptual end to visible end
+                // We need to find the visible position corresponding to conceptualEndOfWordFragment
+                // by iterating backwards from the end of the conceptual fragment.
+                let tempConceptualEnd = conceptualEndOfWordFragment;
+                let foundVisibleEnd = false;
+                while (tempConceptualEnd > conceptualStartOfWordFragment) {
+                    if (conceptualToVisibleMap.has(tempConceptualEnd - 1)) {
+                        segmentVisibleEnd = conceptualToVisibleMap.get(tempConceptualEnd - 1) + 1;
+                        foundVisibleEnd = true;
+                        break;
+                    }
+                    tempConceptualEnd--;
+                }
+                if (!foundVisibleEnd) {
+                    segmentVisibleEnd = segmentVisibleStart; // If no visible chars in the fragment, replace an empty string
+                }
+                
+                // Ensure segmentVisibleEnd doesn't go beyond the current visible cursor position if the user has typed further
+                segmentVisibleEnd = Math.max(segmentVisibleEnd, cursorActualVisiblePos);
+
+                // Now, `segmentVisibleStart` and `segmentVisibleEnd` define the *visible* portion of the input
+                // that corresponds to the `englishKey` (e.g., "sa/m")
+                
+                // Explicitly remove any hidden modifiers or slashes within this conceptual range
+                // This is crucial to prevent residual hidden characters from causing issues.
+                for (let k = conceptualStartOfWordFragment; k < conceptualEndOfWordFragment; k++) {
+                    hiddenModifierPoints.delete(k); // Remove any * or ** within this range
+                    slashSplitPoints.delete(k); // Remove any / within this range
+                    userOverrides.delete(k); // Also clear any single-char overrides
+                }
+
+                // Get the full phonetic spelling of the selected Devanagari word
+                let fullPhoneticOfSelectedWord;
+                if (fullReplacementPhonetic) {
+                    fullPhoneticOfSelectedWord = fullReplacementPhonetic;
+                } else {
+                    fullPhoneticOfSelectedWord = convertDevanagariToSimplifiedPhonetic(nepaliChar);
+                }
+
+                // 1. Update textarea.value with the FULL phonetic sequence
+                const newTextAreaValue = currentVisibleValue.substring(0, segmentVisibleStart) +
+                                         fullPhoneticOfSelectedWord +
+                                         currentVisibleValue.substring(segmentVisibleEnd);
+
+                textarea.value = newTextAreaValue;
+
+                // 2. Adjust all conceptual maps based on this *visible* change in textarea.
+                const { visibleChangeStart, visibleOldEnd, visibleNewEnd } = getVisibleTextDiff(currentVisibleValue, newTextAreaValue);
+                adjustConceptualMapsBasedOnVisibleChange(currentVisibleValue, newTextAreaValue, visibleChangeStart, visibleOldEnd, visibleNewEnd);
+
+                // 3. Set the fixed output segment using the original conceptual startIndex
+                // The new conceptual end for the fixed segment will be its start plus the length of the new phonetic representation.
+                const conceptualStartForFixedSegment = conceptualStartOfWordFragment; // Use the original conceptual start
+                const conceptualEndForFixedSegment = conceptualStartForFixedSegment + fullPhoneticOfSelectedWord.length;
+
+                // Ensure these conceptual indices are valid within the *updated* conceptual input
+                const { conceptualLength: updatedConceptualLength } = getConceptualDetails(newTextAreaValue);
+
+                if (conceptualEndForFixedSegment > updatedConceptualLength) {
+                    console.error(`FATAL ERROR: Calculated conceptual end (${conceptualEndForFixedSegment}) for word "${nepaliChar}" is beyond the updated conceptual string length (${updatedConceptualLength}). Fixed segment will not be saved. This indicates a serious desync.`);
+                } else {
+                    fixedOutputSegments.set(conceptualStartForFixedSegment, {
+                        conceptualEnd: conceptualEndForFixedSegment,
+                        devanagariWord: nepaliChar
+                    });
+                }
+                
+                // Clear any existing single-character userOverrides that might be for this segment.
+                userOverrides.forEach((value, key) => {
+                    if (key >= conceptualStartForFixedSegment && key < conceptualEndForFixedSegment) {
+                        userOverrides.delete(key);
+                    }
+                });
+
+                // Update history
+                if (db && userId) {
+                    try {
+                        const historyDocRef = doc(db, 'artifacts', appId, 'users', userId, 'typingHistory', nepaliChar); 
+                        await setDoc(historyDocRef, {
+                            [nepaliChar]: increment(1)
+                        }, {
+                            merge: true
+                        });
+                    } catch (error) {
+                        console.error("Error updating typing history for word:", error);
+                    }
+                }
+
+            } else { // It's a barhakhari selection (single character override)
+                // Determine the visible start and end of the phonetic segment to be replaced
+                if (conceptualToVisibleMap.has(startIndex)) {
+                    segmentVisibleStart = conceptualToVisibleMap.get(startIndex);
+                } else {
+                    let tempVisiblePrefix = currentVisibleValue.substring(0, cursorActualVisiblePos);
+                    let lastSpace = tempVisiblePrefix.lastIndexOf(' ');
+                    let lastSlash = tempVisiblePrefix.lastIndexOf('/');
+                    segmentVisibleStart = Math.max(lastSpace, lastSlash) + 1;
+                }
+                // The segmentVisibleEnd for a barhakhari override is simpler, just up to the cursor.
+                segmentVisibleEnd = cursorActualVisiblePos;
+
+                userOverrides.set(startIndex, {
+                    originalKey: englishKey,
+                    selectedNepali: nepaliChar
+                });
+
+                if (db && userId) {
+                    try {
+                        const historyDocRef = doc(db, 'artifacts', appId, 'users', userId, 'typingHistory', englishKey.toLowerCase());
+                        await setDoc(historyDocRef, {
+                            [nepaliChar]: increment(1)
+                        }, {
+                            merge: true
+                        });
+                    } catch (error) {
+                        console.error("Error updating typing history:", error);
+                    }
+                }
+            }
+
+            // Always update output and clear suggestions after any selection
+            updateOutput();
+            displaySuggestions([]); 
+            textarea.focus(); // Keep focus on input area after selecting a suggestion
+        }
+
+        async function selectAllOutput() {
+            outputArea.select();
+            outputArea.setSelectionRange(0, outputArea.value.length);
+        }
+
+        async function copyOutput() {
+            try {
+                await navigator.clipboard.writeText(outputArea.value);
+                console.log('Text copied to clipboard!');
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+            }
+        }
+
+        // Helper to determine the visible text difference (insertion/deletion range)
+        function getVisibleTextDiff(oldText, newText) {
+            let i = 0;
+            // Find the start of the change
+            while (i < oldText.length && i < newText.length && oldText[i] === newText[i]) {
+                i++;
+            }
+            const visibleChangeStart = i;
+
+            let oldEnd = oldText.length;
+            let newEnd = newText.length;
+            // Find the end of the change (from the right)
+            while (oldEnd > visibleChangeStart && newEnd > visibleChangeStart && oldText[oldEnd - 1] === newText[newEnd - 1]) {
+                oldEnd--;
+                newEnd--;
+            }
+            const visibleOldEnd = oldEnd;
+            const visibleNewEnd = newEnd;
+
+            return { visibleChangeStart, visibleOldEnd, visibleNewEnd };
+        }
+
+        function updateOutput() {
+            const { conceptualString: conceptualInput } = getConceptualDetails(textarea.value);
+            let finalOutput = '';
+            outputToConceptualMap = []; // Reset map on each update
+            let i = 0; // Index in conceptualInput
+
+            while (i < conceptualInput.length) {
+                let segmentProcessed = false;
+                let conceptualSegmentLengthUsed = 0;
+
+                // 1. Handle Fixed Output segments (selected words)
+                if (fixedOutputSegments.has(i)) {
+                    // console.log(`[updateOutput] Fixed segment found at conceptual index ${i}. Using word: ${fixedOutputSegments.get(i).devanagariWord}`);
+                    const fixedSegment = fixedOutputSegments.get(i);
+                    // Ensure the fixed segment fits within the current conceptual input
+                    if (fixedSegment.conceptualEnd <= conceptualInput.length) {
+                        finalOutput += fixedSegment.devanagariWord;
+                        conceptualSegmentLengthUsed = fixedSegment.conceptualEnd - i;
+                        for (let k = 0; k < fixedSegment.devanagariWord.length; k++) {
+                            outputToConceptualMap.push({ conceptualStart: i, conceptualEnd: fixedSegment.conceptualEnd, type: 'fixed-word' });
+                        }
+                        i = fixedSegment.conceptualEnd; // Advance past the fixed segment
+                        segmentProcessed = true;
+                    } else {
+                        // If the fixed segment extends beyond current conceptual input, it means it's been truncated.
+                        // Treat it as if it's no longer fixed, and proceed with normal processing for the truncated part.
+                        fixedOutputSegments.delete(i); // Remove the invalid fixed segment
+                    }
+                }
+
+                // 2. Handle English block ({...}) - Only if not already processed by fixed segments
+                if (!segmentProcessed && conceptualInput[i] === '{') {
+                    const closingBraceIndex = conceptualInput.indexOf('}', i + 1);
+                    if (closingBraceIndex !== -1) {
+                        const englishText = conceptualInput.substring(i + 1, closingBraceIndex);
+                        finalOutput += englishText;
+                        conceptualSegmentLengthUsed = (closingBraceIndex + 1) - i;
+                        for (let k = 0; k < englishText.length; k++) {
+                            outputToConceptualMap.push({ conceptualStart: i + 1 + k, conceptualEnd: i + 1 + k + 1, type: 'english' });
+                        }
+                        i += conceptualSegmentLengthUsed;
+                        segmentProcessed = true;
+                    } else {
+                        const remainingEnglish = conceptualInput.substring(i + 1);
+                        finalOutput += remainingEnglish;
+                        conceptualSegmentLengthUsed = conceptualInput.length - i;
+                         for (let k = 0; k < remainingEnglish.length; k++) {
+                            outputToConceptualMap.push({ conceptualStart: i + 1 + k, conceptualEnd: i + 1 + k + 1, type: 'english' });
+                        }
+                        i = conceptualInput.length;
+                        segmentProcessed = true;
+                    }
+                }
+
+                // 3. Check for user override (single barhakhari selection) - Only if not already processed
+                if (!segmentProcessed && userOverrides.has(i)) {
+                    const override = userOverrides.get(i);
+                    const phoneticSegment = conceptualInput.substring(i, i + override.originalKey.length);
+                    let lookupKey = caseSensitiveKeys.has(phoneticSegment) ? phoneticSegment : phoneticSegment.toLowerCase();
+
+                    // Only apply override if the *current conceptual input* still matches the *original phonetic key*
+                    if (lookupKey === (caseSensitiveKeys.has(override.originalKey) ? override.originalKey : override.originalKey.toLowerCase())) {
+                        let selected = override.selectedNepali;
+                        let overrideLength = override.originalKey.length;
+                        const nextIndex = i + overrideLength;
+                        if (nextIndex < conceptualInput.length && conceptualInput[nextIndex] === '\\' && selected.endsWith('्')) {
+                            selected = selected.slice(0, -1);
+                            overrideLength += 1;
+                        }
+                        finalOutput += selected;
+                        conceptualSegmentLengthUsed = overrideLength;
+                        for (let k = 0; k < selected.length; k++) {
+                            outputToConceptualMap.push({ conceptualStart: i, conceptualEnd: i + conceptualSegmentLengthUsed, type: 'override' });
+                        }
+                        i += conceptualSegmentLengthUsed;
+                        segmentProcessed = true;
+                    } else {
+                        userOverrides.delete(i); // Remove invalid override if input changed
+                    }
+                }
+
+                // 4. Check for common spelling matches before phonetic conversion
+                if (!segmentProcessed) {
+                    // Check if we are at the start of a potential word (beginning or after space)
+                    if (i === 0 || conceptualInput[i - 1] === ' ') {
+                        let wordEnd = conceptualInput.indexOf(' ', i);
+                        if (wordEnd === -1) wordEnd = conceptualInput.length;
+
+                        // Ensure the segment consists only of letters (no / or hidden modifiers inside for common match)
+                        let hasInvalidChar = false;
+                        for (let j = i; j < wordEnd; j++) {
+                            if (conceptualInput[j] === '/' || conceptualInput[j] === '*' || conceptualInput[j] === '**') {
+                                hasInvalidChar = true;
+                                break;
+                            }
+                        }
+
+                        if (!hasInvalidChar) {
+                            const potentialWord = conceptualInput.substring(i, wordEnd).toLowerCase();
+                            if (commonSpellingDictionary.has(potentialWord)) {
+                                const nepaliWord = commonSpellingDictionary.get(potentialWord);
+                                finalOutput += nepaliWord;
+                                conceptualSegmentLengthUsed = wordEnd - i;
+                                for (let k = 0; k < nepaliWord.length; k++) {
+                                    outputToConceptualMap.push({ conceptualStart: i, conceptualEnd: i + conceptualSegmentLengthUsed, type: 'common-spelling' });
+                                }
+                                i += conceptualSegmentLengthUsed;
+                                segmentProcessed = true;
+                            }
+                        }
+                    }
+                }
+
+                // 5. Automatic phonetic conversion (longest match wins) - Only if not already processed
+                if (!segmentProcessed) {
+                    // console.log(`[updateOutput] Falling back to phonetic conversion for conceptual index ${i}. Segment: "${conceptualInput.substring(i, Math.min(i + 6, conceptualInput.length))}"`);
+                    // If the current conceptual character is '/', skip it entirely
+                    if (conceptualInput[i] === '/') {
+                        conceptualSegmentLengthUsed = 1; // Consume the '/' from conceptual input
+                        // Do NOT add to finalOutput
+                        outputToConceptualMap.push({ conceptualStart: i, conceptualEnd: i + conceptualSegmentLengthUsed, type: 'ignored-separator' });
+                        i += conceptualSegmentLengthUsed;
+                        segmentProcessed = true;
+                    } else if (conceptualInput[i] === '\\') {
+                        conceptualSegmentLengthUsed = 1; // Consume the '\\' from conceptual input
+                        // Do NOT add to finalOutput
+                        outputToConceptualMap.push({ conceptualStart: i, conceptualEnd: i + conceptualSegmentLengthUsed, type: 'ignored-modifier' });
+                        i += conceptualSegmentLengthUsed;
+                        segmentProcessed = true;
+                    } else {
+                        let longestMatchKey = '';
+                        let bestNepaliChar = '';
+                        let currentSegmentEndIndex = conceptualInput.length;
+                        for(let k = i; k < conceptualInput.length; k++) {
+                            // Stop a phonetic segment at space or explicit '/'
+                            if (conceptualInput[k] === ' ' || conceptualInput[k] === '/') {
+                                currentSegmentEndIndex = k;
+                                break;
+                            }
+                        }
+                        const maxSearchLength = Math.min(6, currentSegmentEndIndex - i);
+
+                        for (let len = maxSearchLength; len > 0; len--) {
+                            let segment = conceptualInput.substring(i, i + len); 
+                            let lookupKey = caseSensitiveKeys.has(segment) ? segment : segment.toLowerCase();
+
+                            if (barhakhariMap.has(lookupKey)) {
+                                longestMatchKey = segment;
+                                break;
+                            }
+                        }
+                        
+                        if (longestMatchKey) {
+                            const forms = barhakhariMap.get(caseSensitiveKeys.has(longestMatchKey) ? longestMatchKey : longestMatchKey.toLowerCase());
+                            let selectedForm = forms[0];
+                            let matchLength = longestMatchKey.length;
+                            const nextIndex = i + matchLength;
+                            if (nextIndex < conceptualInput.length && conceptualInput[nextIndex] === '\\' && selectedForm.endsWith('्')) {
+                                selectedForm = selectedForm.slice(0, -1);
+                                matchLength += 1;
+                            }
+                            bestNepaliChar = selectedForm;
+                            conceptualSegmentLengthUsed = matchLength;
+                            finalOutput += bestNepaliChar;
+                            for (let k = 0; k < bestNepaliChar.length; k++) {
+                                outputToConceptualMap.push({ conceptualStart: i, conceptualEnd: i + conceptualSegmentLengthUsed, type: 'phonetic' });
+                            }
+                            i += conceptualSegmentLengthUsed;
+                        } else {
+                            // Fallback: direct copy of character to output (only if not a separator)
+                            finalOutput += conceptualInput[i];
+                            conceptualSegmentLengthUsed = 1;
+                            outputToConceptualMap.push({ conceptualStart: i, conceptualEnd: i + conceptualSegmentLengthUsed, type: 'direct' });
+                            i += conceptualSegmentLengthUsed;
+                        }
+                    }
+                }
+            }
+            outputArea.value = finalOutput;
+        }
+
+        let shiftPressedAlone = false; // Flag to detect if Shift was pressed alone (without other keys)
+
+        textarea.addEventListener('keydown', (event) => {
+            const suggestions = suggestionBox.querySelectorAll('.suggestion-btn');
+            const numSuggestions = suggestions.length;
+
+            const isCtrlPressed = event.ctrlKey;
+            const isShiftPressed = event.shiftKey;
+            const isAltMetaNotPressed = !event.altKey && !event.metaKey;
+
+            // --- Handle Tab key to toggle suggestions ---
+            if (event.key === 'Tab') {
+                event.preventDefault(); // Always prevent default tab navigation behavior
+
+                suggestionsEnabled = !suggestionsEnabled; // Toggle the state
+
+                if (!suggestionsEnabled) {
+                    displaySuggestions([]); // Clear suggestions if now disabled
+                } else {
+                    generateAndDisplaySuggestions(); // Regenerate suggestions if now enabled
+                }
+                textarea.focus(); // Keep focus on input box
+                return; // Crucial: Exit after handling Tab, to prevent other logic from interfering
+            }
+
+            // --- Handle Shift key (set flag for potential alone press) ---
+            if (event.key === 'Shift') {
+                event.preventDefault();
+                if (!event.repeat) {
+                    shiftPressedAlone = true; // Assume alone until proven otherwise
+                }
+                return;
+            }
+
+            // --- If another key is pressed while Shift is held, mark as not alone ---
+            if (isShiftPressed && event.key !== 'Shift') {
+                shiftPressedAlone = false;
+            }
+
+            // --- Handle Space key for de-highlighting ZWNJ/ZWJ or clearing suggestions ---
+            if (event.key === ' ') {
+                if (highlightedButton) {
+                    event.preventDefault(); // Prevent space insertion
+                    insertZWNJBtn.classList.remove('highlighted');
+                    insertZWJBtn.classList.remove('highlighted');
+                    highlightedButton = null;
+                    return; // Do not clear suggestions
+                } else {
+                    // Allow default space insertion, and clear suggestions
+                    clearSuggestionHighlight();
+                    selectedSuggestionIndex = -1;
+                    return;
+                }
+            }
+
+            // --- Handle Slash key (clear suggestions but allow insertion) ---
+            if (event.key === '/') {
+                clearSuggestionHighlight();
+                selectedSuggestionIndex = -1;
+                // Allow default action for Slash (inserting the character)
+                return; // Handled, but allow default key action
+            }
+
+            // --- Other Keydown Logic (only if Tab or Shift was NOT pressed) ---
+
+            // If suggestions are disabled, prevent cycling. Allow normal key presses.
+            if (!suggestionsEnabled || numSuggestions === 0) {
+                 // Prevent default for Ctrl+Shift presses that might otherwise affect browser
+                 // for non-Tab keys. This acts as a general safety if user presses Ctrl+Shift
+                 // with a character or arrow key without suggestions.
+                if (isCtrlPressed && isShiftPressed && (event.key === 'Control' || event.key === 'Shift')) {
+                    event.preventDefault();
+                }
+                return; // Exit if suggestions are not active or not enabled
+            }
+
+            // --- Cycling Logic (only if suggestions are present and enabled, and it's not a Tab key) ---
+
+            // Case 1: Control + Shift + Any Non-Modifier Key (General forward cycling)
+            const isModifierKeyOnly = (event.key === 'Control' || event.key === 'Shift' || event.key === 'Alt' || event.key === 'Meta');
+            if (isCtrlPressed && isShiftPressed && !isModifierKeyOnly && isAltMetaNotPressed && (event.key !== 'Enter')) {
+                if (!event.repeat) { // Cycle once per new non-modifier key press
+                    selectedSuggestionIndex = (selectedSuggestionIndex + 1) % numSuggestions;
+                    highlightSuggestion(selectedSuggestionIndex);
+                }
+                event.preventDefault(); // Prevent character input when cycling via Ctrl+Shift + (any key)
+                return; // Handled
+            }
+
+            // Case 2: Right Arrow (Cycle forward without modifiers)
+            if (event.key === 'ArrowRight' && !isCtrlPressed && !isShiftPressed && isAltMetaNotPressed) {
+                event.preventDefault(); // Prevent cursor movement in textarea
+                if (!event.repeat) {
+                    selectedSuggestionIndex = (selectedSuggestionIndex + 1) % numSuggestions;
+                    highlightSuggestion(selectedSuggestionIndex);
+                }
+                return; // Handled
+            }
+
+            // Case 3: Left Arrow (Cycle backward without modifiers)
+            if (event.key === 'ArrowLeft' && !isCtrlPressed && !isShiftPressed && isAltMetaNotPressed) {
+                event.preventDefault(); // Prevent cursor movement in textarea
+                if (!event.repeat) {
+                    // Ensure positive result for modulo operation
+                    selectedSuggestionIndex = (selectedSuggestionIndex - 1 + numSuggestions) % numSuggestions; 
+                    highlightSuggestion(selectedSuggestionIndex);
+                }
+                return; // Handled
+            }
+            
+            // --- Vertical Arrow Key Logic ---
+            const currentHighlighted = suggestions[selectedSuggestionIndex];
+            if (currentHighlighted) {
+                const currentRect = currentHighlighted.getBoundingClientRect();
+                const currentOffsetTop = currentRect.top;
+                const currentOffsetLeft = currentRect.left;
+                const offsetTolerance = 5; // Pixels to consider positions "aligned"
+
+                let nextIndex = -1;
+
+                if (event.key === 'ArrowDown' && !isCtrlPressed && !isShiftPressed && isAltMetaNotPressed) {
+                    event.preventDefault();
+                    let candidates = [];
+                    // Find all suggestions in rows below the current one
+                    for (let i = 0; i < numSuggestions; i++) {
+                        const sug = suggestions[i];
+                        const sugRect = sug.getBoundingClientRect();
+                        if (sugRect.top > currentOffsetTop) {
+                            candidates.push({ index: i, rect: sugRect });
+                        }
+                    }
+
+                    if (candidates.length > 0) {
+                        // Sort candidates by vertical proximity (smallest offsetTop) then horizontal proximity
+                        candidates.sort((a, b) => {
+                            if (a.rect.top !== b.rect.top) {
+                                return a.rect.top - b.rect.top; // Prioritize closest row
+                            }
+                            // Within the same row, prioritize closest horizontal position
+                            return Math.abs(a.rect.left - currentOffsetLeft) - Math.abs(b.rect.left - currentOffsetLeft);
+                        });
+
+                        // Select the candidate with the closest horizontal position in the first "next" row
+                        // Find the first row of candidates
+                        const firstRowTop = candidates[0].rect.top;
+                        const firstRowCandidates = candidates.filter(c => c.rect.top === firstRowTop);
+
+                        // From this row, find the one closest horizontally
+                        if (firstRowCandidates.length > 0) {
+                            firstRowCandidates.sort((a, b) =>
+                                Math.abs(a.rect.left - currentOffsetLeft) - Math.abs(b.rect.left - currentOffsetLeft)
+                            );
+                            nextIndex = firstRowCandidates[0].index;
+                        }
+                    }
+
+                    // If no suggestions below, wrap around to the top row, maintaining column
+                    if (nextIndex === -1 && numSuggestions > 0) {
+                        candidates = [];
+                        for (let i = 0; i < numSuggestions; i++) {
+                            const sug = suggestions[i];
+                            const sugRect = sug.getBoundingClientRect();
+                            candidates.push({ index: i, rect: sugRect });
+                        }
+                        
+                        // Sort candidates by horizontal proximity first
+                        candidates.sort((a, b) => 
+                            Math.abs(a.rect.left - currentOffsetLeft) - Math.abs(b.rect.left - currentOffsetLeft)
+                        );
+                        
+                        // Pick the first one (which is closest horizontally)
+                        nextIndex = candidates[0].index;
+                    }
+
+                    if (nextIndex !== -1) {
+                        selectedSuggestionIndex = nextIndex;
+                        highlightSuggestion(selectedSuggestionIndex);
+                    }
+                    return; // Handled
+                }
+
+                if (event.key === 'ArrowUp' && !isCtrlPressed && !isShiftPressed && isAltMetaNotPressed) {
+                    event.preventDefault();
+                    let candidates = [];
+                    // Find all suggestions in rows above the current one
+                    for (let i = 0; i < numSuggestions; i++) {
+                        const sug = suggestions[i];
+                        const sugRect = sug.getBoundingClientRect();
+                        if (sugRect.top < currentOffsetTop) {
+                            candidates.push({ index: i, rect: sugRect });
+                        }
+                    }
+
+                    if (candidates.length > 0) {
+                        // Sort candidates by vertical proximity (largest offsetTop, i.e., last row above)
+                        candidates.sort((a, b) => {
+                            if (a.rect.top !== b.rect.top) {
+                                return b.rect.top - a.rect.top; // Prioritize closest row above
+                            }
+                            // Within the same row, prioritize closest horizontal position
+                            return Math.abs(a.rect.left - currentOffsetLeft) - Math.abs(b.rect.left - currentOffsetLeft);
+                        });
+
+                        // Select the candidate with the closest horizontal position in the first "previous" row
+                        // Find the first row of candidates (which is actually the last row above in terms of offsetTop)
+                        const firstRowTop = candidates[0].rect.top;
+                        const firstRowCandidates = candidates.filter(c => c.rect.top === firstRowTop);
+
+                        // From this row, find the one closest horizontally
+                        if (firstRowCandidates.length > 0) {
+                            firstRowCandidates.sort((a, b) =>
+                                Math.abs(a.rect.left - currentOffsetLeft) - Math.abs(b.rect.left - currentOffsetLeft)
+                            );
+                            nextIndex = firstRowCandidates[0].index;
+                        }
+                    }
+
+                    // If no suggestions above, wrap around to the bottom row, maintaining column
+                    if (nextIndex === -1 && numSuggestions > 0) {
+                        candidates = [];
+                        for (let i = 0; i < numSuggestions; i++) {
+                            const sug = suggestions[i];
+                            const sugRect = sug.getBoundingClientRect();
+                            candidates.push({ index: i, rect: sugRect });
+                        }
+                        
+                        // Sort candidates by horizontal proximity first (for initial column alignment)
+                        candidates.sort((a, b) => 
+                            Math.abs(a.rect.left - currentOffsetLeft) - Math.abs(b.rect.left - currentOffsetLeft)
+                        );
+                        
+                        // Then find the last row among these horizontally closest candidates
+                        let bottomMostCandidates = [];
+                        let maxBottomTop = -Infinity;
+                        if(candidates.length > 0) {
+                            maxBottomTop = candidates.reduce((max, c) => Math.max(max, c.rect.top), -Infinity);
+                            bottomMostCandidates = candidates.filter(c => c.rect.top === maxBottomTop);
+                        }
+
+                        if(bottomMostCandidates.length > 0) {
+                            // From the bottom-most, horizontally closest candidates, pick the very first one
+                            bottomMostCandidates.sort((a,b) => a.rect.left - b.rect.left);
+                            nextIndex = bottomMostCandidates[0].index;
+                        } else if (candidates.length > 0) {
+                            // Fallback if somehow bottomMostCandidates is empty, just pick the first from the original candidates
+                            nextIndex = candidates[0].index;
+                        }
+                    }
+
+                    if (nextIndex !== -1) {
+                        selectedSuggestionIndex = nextIndex;
+                        highlightSuggestion(selectedSuggestionIndex);
+                    }
+                    return; // Handled
+                }
+            }
+            // --- End Vertical Arrow Key Logic ---
+
+
+            // --- Enter Key for Selection ---
+            if (event.key === 'Enter') {
+                if (highlightedButton) {
+                    event.preventDefault();
+                    const btnToClick = highlightedButton === 'zwnj' ? insertZWNJBtn : insertZWJBtn;
+                    btnToClick.click();
+                    insertZWNJBtn.classList.remove('highlighted');
+                    insertZWJBtn.classList.remove('highlighted');
+                    highlightedButton = null;
+                    return;
+                }
+                if (selectedSuggestionIndex !== -1 && numSuggestions > 0) {
+                    event.preventDefault(); // Prevent new line in textarea
+                    const selectedBtn = suggestions[selectedSuggestionIndex];
+                    selectSuggestion(
+                        selectedBtn.dataset.nepaliChar,
+                        selectedBtn.dataset.englishKey,
+                        parseInt(selectedBtn.dataset.startIndex),
+                        selectedBtn.dataset.isWord === 'true',
+                        selectedBtn.dataset.fullReplacementPhonetic
+                    );
+                    return; // Handled
+                }
+                }
+            });
+
+        textarea.addEventListener('keyup', (event) => {
+            // Handle Shift keyup for ZWNJ/ZWJ toggle only if pressed alone
+            if (event.key === 'Shift' && shiftPressedAlone) {
+                event.preventDefault();
+                // Toggle highlight
+                if (highlightedButton === null || highlightedButton === 'zwj') {
+                    highlightedButton = 'zwnj';
+                    insertZWNJBtn.classList.add('highlighted');
+                    insertZWJBtn.classList.remove('highlighted');
+                } else {
+                    highlightedButton = 'zwj';
+                    insertZWNJBtn.classList.remove('highlighted');
+                    insertZWJBtn.classList.add('highlighted');
+                }
+                shiftPressedAlone = false; // Reset flag
+                return;
+            }
+
+            // Reset flag if not handled above
+            shiftPressedAlone = false;
+
+            // Other keyup logic (e.g., ensure updates after key interactions)
+            updateOutput();
+            generateAndDisplaySuggestions(); // This will respect the `suggestionsEnabled` flag
+        });
+
+
+        textarea.addEventListener('beforeinput', (event) => {
+            const oldVisibleValue = textarea.value;
+            const cursorPos = textarea.selectionStart;
+
+            // Get the current conceptual state based on `oldVisibleValue`
+            const {
+                conceptualString,
+                visibleToConceptualMap,
+            } = getConceptualDetails(oldVisibleValue);
+
+            const charTyped = event.data;
+
+            // Handle auto-completion of curly braces
+            if (charTyped === '{') {
+                event.preventDefault();
+                const newValue = oldVisibleValue.substring(0, cursorPos) + '{}' + oldVisibleValue.substring(cursorPos);
+                textarea.value = newValue;
+                textarea.selectionStart = textarea.selectionEnd = cursorPos + 1;
+                lastProcessedTextAreaValue = newValue; // Update for next comparison
+                updateOutput();
+                generateAndDisplaySuggestions();
+                return;
+            }
+
+            // Handle typing hidden characters like '/', '*', '**', '\\'
+            // These characters are not visibly inserted into the textarea but affect the conceptual string.
+            if (charTyped === '/' || charTyped === '*' || charTyped === '**' || charTyped === '\\') {
+                event.preventDefault();
+
+                // Determine the conceptual insertion point
+                const conceptualInsertionPoint = visibleToConceptualMap.has(cursorPos)
+                    ? visibleToConceptualMap.get(cursorPos)
+                    : conceptualString.length;
+
+                if (charTyped === '/') {
+                    slashSplitPoints.add(conceptualInsertionPoint);
+                } else if (charTyped === '\\') {
+                    hiddenModifierPoints.set(conceptualInsertionPoint, '\\');
+                } else if (charTyped === '*') {
+                    if (hiddenModifierPoints.has(conceptualInsertionPoint - 1) && hiddenModifierPoints.get(conceptualInsertionPoint - 1) === '*') {
+                        hiddenModifierPoints.set(conceptualInsertionPoint - 1, '**');
+                    } else {
+                        hiddenModifierPoints.set(conceptualInsertionPoint, '*');
+                    }
+                } else if (charTyped === '**') {
+                    hiddenModifierPoints.set(conceptualInsertionPoint, '**');
+                }
+                
+                // No visible change to textarea, but conceptual string changes.
+                lastProcessedTextAreaValue = oldVisibleValue; // Update for next input event
+                updateOutput();
+                generateAndDisplaySuggestions();
+                return;
+            }
+
+            // Handle Backspace/Delete keysin input area for hidden characters
+            if (event.inputType === 'deleteContentBackward' || event.inputType === 'deleteContentForward') {
+                let conceptualTargetIndex = -1; // The conceptual index that potentially holds a hidden char to delete
+                
+                if (event.inputType === 'deleteContentBackward') { // Backspace
+                    if (cursorPos === 0) return;
+                    // Find the conceptual index corresponding to the visible char *before* the cursor
+                    const conceptualIdxBeforeCursor = visibleToConceptualMap.get(cursorPos - 1);
+                    if (conceptualIdxBeforeCursor !== undefined) {
+                        conceptualTargetIndex = conceptualIdxBeforeCursor;
+                    } else {
+                        // If there's no visible char at cursorPos - 1, it means a hidden char is there.
+                        // Find the last conceptual index that maps to a visible char.
+                        let tempVisibleIdx = cursorPos - 1;
+                        while(tempVisibleIdx >= 0 && !visibleToConceptualMap.has(tempVisibleIdx)) {
+                            tempVisibleIdx--;
+                        }
+                        // Now, the conceptual target is the first hidden char after this visible char (or at the start)
+                        conceptualTargetIndex = (tempVisibleIdx >= 0 && visibleToConceptualMap.has(tempVisibleIdx)) 
+                                                ? visibleToConceptualMap.get(tempVisibleIdx) + 1 // After the visible char
+                                                : 0; // If before first visible char
+                    }
+                } else { // deleteContentForward
+                    if (cursorPos >= oldVisibleValue.length) return;
+                    // Find the conceptual index corresponding to the visible char *at* the cursor
+                    const conceptualIdxAtCursor = visibleToConceptualMap.get(cursorPos);
+                    if (conceptualIdxAtCursor !== undefined) {
+                        conceptualTargetIndex = conceptualIdxAtCursor;
+                    } else {
+                        // If no visible char at cursor, it means a hidden char is there.
+                        // Find the first conceptual index that maps to a visible char.
+                        let tempVisibleIdx = cursorPos;
+                        while(tempVisibleIdx < oldVisibleValue.length && !visibleToConceptualMap.has(tempVisibleIdx)) {
+                            tempVisibleIdx++;
+                        }
+                        // Now, the conceptual target is the first hidden char before this visible char (or at the end)
+                        conceptualTargetIndex = (tempVisibleIdx < oldVisibleValue.length && visibleToConceptualMap.has(tempVisibleIdx))
+                                                ? visibleToConceptualMap.get(tempVisibleIdx) // At the visible char
+                                                : conceptualString.length; // If after last visible char
+                    }
+                }
+                
+                if (conceptualTargetIndex !== -1 && (hiddenModifierPoints.has(conceptualTargetIndex) || slashSplitPoints.has(conceptualTargetIndex))) {
+                    event.preventDefault(); // Prevent default browser deletion if we handle it
+
+                    let removedConceptualLength = 0;
+                    if (hiddenModifierPoints.has(conceptualTargetIndex)) {
+                        removedConceptualLength = hiddenModifierPoints.get(conceptualTargetIndex).length;
+                        hiddenModifierPoints.delete(conceptualTargetIndex);
+                    } else if (slashSplitPoints.has(conceptualTargetIndex)) {
+                        removedConceptualLength = 1;
+                        slashSplitPoints.delete(conceptualTargetIndex);
+                    }
+                    
+                    // Shift all subsequent conceptual markers
+                    const shiftAmount = -removedConceptualLength;
+
+                    // Manually adjust the keys of maps that store conceptual indices
+                    const adjustMapKeys = (map) => {
+                        const newMap = new Map();
+                        map.forEach((val, key) => {
+                            if (key < conceptualTargetIndex) newMap.set(key, val);
+                            else if (key >= conceptualTargetIndex + removedConceptualLength) newMap.set(key + shiftAmount, val);
+                        });
+                        return newMap;
+                    };
+
+                    const adjustSetValues = (set) => {
+                        const newSet = new Set();
+                        set.forEach(key => {
+                            if (key < conceptualTargetIndex) newSet.add(key);
+                            else if (key >= conceptualTargetIndex + removedConceptualLength) newSet.add(key + shiftAmount);
+                        });
+                        return newSet;
+                    };
+
+                    hiddenModifierPoints = adjustMapKeys(hiddenModifierPoints);
+                    slashSplitPoints = adjustSetValues(slashSplitPoints);
+                    userOverrides = adjustMapKeys(userOverrides);
+                    
+                    // Adjust fixedOutputSegments (conceptualStart and conceptualEnd)
+                    const newFixedOutputSegments = new Map();
+                    fixedOutputSegments.forEach((segment, key) => {
+                        // If the segment starts before the deletion, and ends before or at the start of deletion, no change
+                        if (key < conceptualTargetIndex && segment.conceptualEnd <= conceptualTargetIndex) {
+                            newFixedOutputSegments.set(key, segment);
+                        } 
+                        // If the segment starts after the deletion, shift it
+                        else if (key >= conceptualTargetIndex + removedConceptualLength) {
+                            newFixedOutputSegments.set(key + shiftAmount, {
+                                conceptualEnd: segment.conceptualEnd + shiftAmount,
+                                devanagariWord: segment.devanagariWord
+                            });
+                        }
+                        // If the segment overlaps or is entirely within the deleted conceptual range, it's removed
+                    });
+                    fixedOutputSegments = newFixedOutputSegments;
+
+                    lastProcessedTextAreaValue = oldVisibleValue; // No visible change to textarea
+                    updateOutput();
+                    generateAndDisplaySuggestions();
+                    return;
+                }
+            }
+            lastProcessedTextAreaValue = oldVisibleValue; // Capture the state for comparison in `input`
+        });
+
+
+        textarea.addEventListener('input', (event) => {
+            const oldVisibleValue = lastProcessedTextAreaValue; // Value captured by `beforeinput`
+            const newVisibleValue = textarea.value; // Current value after browser's default handling (if not prevented by beforeinput by beforeinput)
+
+            // Determine what visible text was changed (inserted/deleted)
+            const { visibleChangeStart, visibleOldEnd, visibleNewEnd } = getVisibleTextDiff(oldVisibleValue, newVisibleValue);
+
+            // Adjust conceptual maps based on this visible diff
+            adjustConceptualMapsBasedOnVisibleChange(oldVisibleValue, newVisibleValue, visibleChangeStart, visibleOldEnd, visibleNewEnd);
+
+            updateOutput();
+            generateAndDisplaySuggestions(); // This will respect the `suggestionsEnabled` flag
+
+            lastProcessedTextAreaValue = newVisibleValue; // Update for the next cycle
+        });
+
+
+        textarea.addEventListener('blur', () => {
+            setTimeout(() => {
+                const activeElement = document.activeElement;
+                const isInteractingWithOutputControls = (activeElement === outputArea ||
+                                                         activeElement === selectAllButton ||
+                                                         activeElement === copyButton);
+
+                if (!isInteractingWithOutputControls && !suggestionBox.contains(activeElement)) {
+                    // Do not clear suggestions if blur is due to clicking on output controls or a suggestion button
+                    // The assumption is that suggestion selection should be handled by its click listener.
+                    // For now, keep them visible until a selection or new typing.
+                }
+            }, 50);
+        });
+
+        outputArea.addEventListener('focus', () => {
+            // Allow partial selection on focus.
+        });
+
+        outputArea.addEventListener('mousedown', (e) => {
+            // Do not prevent default to allow native text selection behavior.
+        });
+
+        // --- outputArea input event listener ---
+        // Need to track last value of outputArea for comparison
+        let lastProcessedOutputValue = '';
+
+        outputArea.addEventListener('input', (event) => {
+            const newOutputValue = outputArea.value;
+            const oldOutputValue = lastProcessedOutputValue;
+            lastProcessedOutputValue = newOutputValue; // Update for the *next* input event
+
+            const { visibleChangeStart: outputChangeStart, visibleOldEnd: outputOldEnd, visibleNewEnd: outputNewEnd } = getVisibleTextDiff(oldOutputValue, newOutputValue);
+
+            // If there was an actual deletion in the output box
+            if (outputOldEnd > outputChangeStart) {
+                let minConceptualIndexToDelete = Infinity;
+                let maxConceptualIndexToDelete = -Infinity;
+
+                // Find the conceptual range corresponding to the deleted output characters
+                for (let j = outputChangeStart; j < outputOldEnd; j++) {
+                    if (outputToConceptualMap[j]) {
+                        minConceptualIndexToDelete = Math.min(minConceptualIndexToDelete, outputToConceptualMap[j].conceptualStart);
+                        maxConceptualIndexToDelete = Math.max(maxConceptualIndexToDelete, outputToConceptualMap[j].conceptualEnd);
+                    }
+                }
+
+                if (minConceptualIndexToDelete !== Infinity && maxConceptualIndexToDelete !== -Infinity) {
+                    // Get fresh conceptual details based on current input.
+                    const {
+                        visibleToConceptualMap,
+                    } = getConceptualDetails(textarea.value);
+
+                    let inputVisibleStartToDelete = textarea.value.length; // Initialize to end
+                    let inputVisibleEndToDelete = 0; // Initialize to beginning
+
+                    // Find the first visible input character index whose conceptual mapping is within the deleted range
+                    for (let i = 0; i < textarea.value.length; i++) {
+                        const conceptualIdx = visibleToConceptualMap.get(i);
+                        if (conceptualIdx !== undefined && conceptualIdx >= minConceptualIndexToDelete && conceptualIdx < maxConceptualIndexToDelete) {
+                            inputVisibleStartToDelete = i;
+                            break;
+                        }
+                    }
+
+                    // Find the last visible input character index whose conceptual mapping is within the deleted range
+                    for (let i = textarea.value.length - 1; i >= 0; i--) {
+                        const conceptualIdx = visibleToConceptualMap.get(i);
+                        if (conceptualIdx !== undefined && conceptualIdx >= minConceptualIndexToDelete && conceptualIdx < maxConceptualIndexToDelete) {
+                            inputVisibleEndToDelete = i + 1; // +1 to make it exclusive end
+                            break;
+                        }
+                    }
+
+                    if (inputVisibleStartToDelete < inputVisibleEndToDelete) { // Ensure a valid range was found
+                        const originalTextAreaValue = textarea.value;
+                        const newTextAreaValueAfterDeletion = originalTextAreaValue.substring(0, inputVisibleStartToDelete) + originalTextAreaValue.substring(inputVisibleEndToDelete);
+                        textarea.value = newTextAreaValueAfterDeletion;
+
+                        // Adjust internal maps. This is crucial to consistency.
+                        const { visibleChangeStart, visibleOldEnd, visibleNewEnd } = getVisibleTextDiff(originalTextAreaValue, newTextAreaValueAfterDeletion);
+                        adjustConceptualMapsBasedOnVisibleChange(originalTextAreaValue, newTextAreaValueAfterDeletion, visibleChangeStart, visibleOldEnd, visibleNewEnd);
+                        
+                        updateOutput(); // Re-convert based on new input
+                        generateAndDisplaySuggestions();
+                        textarea.focus(); // Keep focus on input box
+                        return; // Handled the deletion, exit event listener
+                    }
+                }
+            }
+            
+            // If it was an insertion in output, or no clear deletion to sync,
+            // or the deletion mapping was ambiguous/couldn't be resolved precisely,
+            // revert outputArea to its calculated value based on input and re-sync.
+            // This also ensures that something was typed directly in it, it gets reverted.
+            updateOutput(); // Re-sync output from input
+            generateAndDisplaySuggestions();
+            textarea.focus(); // Keep focus on input
+        });
+
+
+        // --- Add event listeners for ZWNJ and ZWJ buttons ---
+        insertZWNJBtn.addEventListener('click', () => {
+            const cursorPos = textarea.selectionStart;
+            const oldValue = textarea.value;
+            const newValue = oldValue.substring(0, cursorPos) + '\u200C' + oldValue.substring(cursorPos);
+            textarea.value = newValue;
+            textarea.selectionStart = textarea.selectionEnd = cursorPos + 1;
+            lastProcessedTextAreaValue = newValue;
+            updateOutput();
+            generateAndDisplaySuggestions();
+            textarea.focus();
+        });
+
+        insertZWJBtn.addEventListener('click', () => {
+            const cursorPos = textarea.selectionStart;
+            const oldValue = textarea.value;
+            const newValue = oldValue.substring(0, cursorPos) + '\u200D' + oldValue.substring(cursorPos);
+            textarea.value = newValue;
+            textarea.selectionStart = textarea.selectionEnd = cursorPos + 1;
+            lastProcessedTextAreaValue = newValue;
+            updateOutput();
+            generateAndDisplaySuggestions();
+            textarea.focus();
+        });
+
+
+        selectAllButton.addEventListener('click', selectAllOutput);
+        copyButton.addEventListener('click', copyOutput);
+
+        // Initialize lastProcessedOutputValue on load
+        window.addEventListener('load', () => {
+            lastProcessedOutputValue = outputArea.value;
+            updateOutput(); // Initial update to build outputToConceptualMap for the first time
+            generateAndDisplaySuggestions();
+        });
+    </script>
+</body>
+</html>
